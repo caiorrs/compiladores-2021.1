@@ -781,57 +781,57 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 13 "scanner.l"
-{hashInsert(yytext, KW_CHAR); return KW_CHAR;}
+{return KW_CHAR;}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 14 "scanner.l"
-{hashInsert(yytext, KW_INT); return KW_INT;}
+{return KW_INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
 #line 15 "scanner.l"
-{hashInsert(yytext, KW_FLOAT); return KW_FLOAT;}
+{return KW_FLOAT;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 16 "scanner.l"
-{hashInsert(yytext, KW_IF); return KW_IF;}
+{return KW_IF;}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 17 "scanner.l"
-{hashInsert(yytext, KW_THEN); return KW_THEN;}
+{return KW_THEN;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 18 "scanner.l"
-{hashInsert(yytext, KW_ELSE); return KW_ELSE;}
+{return KW_ELSE;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
 #line 19 "scanner.l"
-{hashInsert(yytext, KW_WHILE); return KW_WHILE;}
+{return KW_WHILE;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
 #line 20 "scanner.l"
-{hashInsert(yytext, KW_GOTO); return KW_GOTO;}
+{return KW_GOTO;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
 #line 21 "scanner.l"
-{hashInsert(yytext, KW_READ); return KW_READ;}
+{return KW_READ;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
 #line 22 "scanner.l"
-{hashInsert(yytext, KW_PRINT); return KW_PRINT;}
+{return KW_PRINT;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
 #line 23 "scanner.l"
-{hashInsert(yytext, KW_RETURN); return KW_RETURN;}
+{return KW_RETURN;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
@@ -841,22 +841,22 @@ YY_RULE_SETUP
 case 13:
 YY_RULE_SETUP
 #line 25 "scanner.l"
-{hashInsert(yytext, OPERATOR_LE); return OPERATOR_LE;}
+{return OPERATOR_LE;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
 #line 26 "scanner.l"
-{hashInsert(yytext, OPERATOR_GE); return OPERATOR_GE;}
+{return OPERATOR_GE;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
 #line 27 "scanner.l"
-{hashInsert(yytext, OPERATOR_EQ); return OPERATOR_EQ;}
+{return OPERATOR_EQ;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
 #line 28 "scanner.l"
-{hashInsert(yytext, OPERATOR_DIF); return OPERATOR_DIF;}
+{return OPERATOR_DIF;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
@@ -902,7 +902,7 @@ YY_RULE_SETUP
 case 25:
 YY_RULE_SETUP
 #line 37 "scanner.l"
-{hashInsert(yytext, TOKEN_ERROR); return TOKEN_ERROR;}
+{printf("Invalid token: %c", yytext[0]); return TOKEN_ERROR;}
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */

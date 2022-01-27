@@ -53,6 +53,10 @@ int isRunning(void) {
   return running;
 }
 
+void initMe(void) {
+  hashInit();
+}
+
 int yywrap() {
   running = 0;
   return 1;
