@@ -21,7 +21,7 @@ int lineNumber = 1;
 "read"                  {hashInsert(yytext, KW_READ); return KW_READ;}
 "print"                 {hashInsert(yytext, KW_PRINT); return KW_PRINT;}
 "return"                {hashInsert(yytext, KW_RETURN); return KW_RETURN;}
-[,;:(){}\[\]/+/-/*<>=]           {return yytext[0];}
+[,;:(){}\[\]+-/*<>=]           {return yytext[0];}
 "<="                  {hashInsert(yytext, OPERATOR_LE); return OPERATOR_LE;}
 ">="                  {hashInsert(yytext, OPERATOR_GE); return OPERATOR_GE;}
 "=="                  {hashInsert(yytext, OPERATOR_EQ); return OPERATOR_EQ;}
@@ -32,7 +32,7 @@ int lineNumber = 1;
 \'[ -~]\'             {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 \"[ -~]*\"            {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 \\\\.*                {printf("COMMENT\n");}
-\\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT");}
+\\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}
 [a-zA-Z_\-]+          {hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 .                     {hashInsert(yytext, TOKEN_ERROR); return TOKEN_ERROR;}
 
@@ -43,7 +43,15 @@ int lineNumber = 1;
 %%
 
 #include "hash.c"
-#include "main2.c"
+#include "main.c"
+
+int getLineNumber(void) {
+  return lineNumber;
+}
+
+int isRunning(void) {
+  return running;
+}
 
 int yywrap() {
   running = 0;
