@@ -1,0 +1,29 @@
+int 123
+{
+  + *
+}
+\****************************************************************
+nldkasjdkla
+\\das das
+*\
+
+\\123
+
+teste int char float if then else while string
+
+
+    
+  identificador-
+  ab-123
+  _123_12-
+  teste-12
+  -123
+  - - teste-ab-c_def
+  a_b_c
+  ""
+  "string"
+  'a'
+  '"'
+  "'"
+  '''
+  """

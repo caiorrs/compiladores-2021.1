@@ -84,7 +84,7 @@ int main(int argc, char **argv)
       printf("TOKEN_ERROR\n");
       break;
     default:
-      printf("FOUND: %c\n", token);
+      printf("Encontrei: %c\n", token);
       break;
     }
   }
