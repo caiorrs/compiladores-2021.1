@@ -1,4 +1,8 @@
 %{
+/*
+  Caio Roberto Ramos da Silva - 00279459
+  Compiladores - 2021.2 - Marcelo Johann
+*/
 #include "tokens.h"
 #include "hash.h"
 
