@@ -27,3 +27,5 @@ teste int char float if then else while string
   "'"
   '''
   """
+
+  @!$
