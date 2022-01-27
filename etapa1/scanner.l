@@ -2,6 +2,7 @@
 /*
   Caio Roberto Ramos da Silva - 00279459
   Compiladores - 2021.2 - Marcelo Johann
+  String regex from - https://stackoverflow.com/a/1016356
 */
 #include "tokens.h"
 #include "hash.h"
