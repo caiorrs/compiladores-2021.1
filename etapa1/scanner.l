@@ -31,13 +31,13 @@ int lineNumber = 1;
 [0-9]+                {hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
 \'[ -~]\'             {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 \"[ -~]*\"            {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
-"/*"                  {BEGIN(MULTILINE_COMMENT);}
-"//".*                {printf("COMMENT\n");}
+\\\\.*                {printf("COMMENT\n");}
+\\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT");}
 [a-zA-Z_\-]+          {hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 .                     {hashInsert(yytext, TOKEN_ERROR); return TOKEN_ERROR;}
 
-<MULTILINE_COMMENT>"*/" {BEGIN(INITIAL);}
-<MULTILINE_COMMENT>"\n" {++lineNumber;}
+<MULTILINE_COMMENT>\n {++lineNumber;}
+<MULTILINE_COMMENT>"*\\" {BEGIN(INITIAL);}
 <MULTILINE_COMMENT>.
 
 %%
