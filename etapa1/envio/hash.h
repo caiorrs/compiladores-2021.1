@@ -1,3 +1,7 @@
+/*
+  Caio Roberto Ramos da Silva - 00279459
+  Compiladores - 2021.2 - Marcelo Johann
+*/
 // Código desenvolvido pelo Professor Marcelo Johann
 
 #ifndef HASH_HEADER

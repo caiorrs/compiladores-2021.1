@@ -26,6 +26,10 @@ teste int char float if then else while string
   '"'
   "'"
   '''
-  """
+  "\n"
 
   @!$
+
+  "uma string \""$ "outra string" $""$ "Depois string vazia"$
+
+  """

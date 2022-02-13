@@ -1,4 +1,9 @@
 %{
+/*
+  Caio Roberto Ramos da Silva - 00279459
+  Compiladores - 2021.2 - Marcelo Johann
+  String regex from - https://stackoverflow.com/a/1016356
+*/
 #include "tokens.h"
 #include "hash.h"
 
@@ -29,11 +34,11 @@ int lineNumber = 1;
 [ \t]
 "\n"                  {++lineNumber;}
 [0-9]+                {hashInsert(yytext, LIT_INTEGER); return LIT_INTEGER;}
-\'[ -~]\'             {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
-\"[ -~]*\"            {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
+\'.\'                 {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+\"(\\.|[^\"])*\"      {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 \\\\.*                {printf("COMMENT\n");}
 \\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}
-[a-zA-Z_\-]+          {hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
+[a-z_\-]+             {hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
 .                     {printf("Invalid token: %c ", yytext[0]); return TOKEN_ERROR;}
 
 <MULTILINE_COMMENT>\n {++lineNumber;}
