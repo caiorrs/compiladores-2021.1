@@ -99,7 +99,8 @@ initialized_array: ':' arr_elements
 arr_elements: arr_element more_elements
     ;
 
-more_elements: ' ' arr_elements
+more_elements: arr_elements
+    |
     ;
 
 arr_element: LIT_INTEGER

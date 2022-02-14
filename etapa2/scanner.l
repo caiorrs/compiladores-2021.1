@@ -38,7 +38,7 @@ int getLineNumber(void) {
 [ \t]
 "\n"                  {++lineNumber;}
 [0-9]+                {hashInsert(yytext, LIT_INTEGER); printf("%s\n", yytext); return LIT_INTEGER;}
-\'.\'                 {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+\'.\'                 {hashInsert(yytext, LIT_CHAR); printf("%s\n", yytext); return LIT_CHAR;}
 \"(\\.|[^\"])*\"      {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 \\\\.*                {printf("COMMENT\n");}
 \\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}

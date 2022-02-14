@@ -888,7 +888,7 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 41 "scanner.l"
-{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+{hashInsert(yytext, LIT_CHAR); printf("%s\n", yytext); return LIT_CHAR;}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
