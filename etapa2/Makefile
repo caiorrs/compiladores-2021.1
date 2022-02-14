@@ -6,6 +6,7 @@
 # In our case, you probably need #include "hash.c" at the beginning
 # and #include "main.c" in the last part of the scanner.l
 #
+# yacc -d -t -v parser.y
 
 etapa2: y.tab.c lex.yy.c
 	gcc -o etapa2 lex.yy.c

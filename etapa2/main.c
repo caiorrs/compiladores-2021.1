@@ -8,6 +8,8 @@
 int main(int argc, char **argv)
 {
 
+  extern int yy_flex_debug;
+
   int token;
 
   if (argc < 2)
@@ -20,6 +22,7 @@ int main(int argc, char **argv)
 
   hashInit();
 
+  yy_flex_debug = 1;
   yyparse();
 
   hashPrint();
