@@ -80,9 +80,22 @@ expr: KW_READ
     | LIT_CHAR
     | LIT_STRING
     | TK_IDENTIFIER
-    // | function_call
+    | function_call
     ;
 
+function_call: TK_IDENTIFIER '(' call_parameters ')'
+    | TK_IDENTIFIER '('')'
+
+call_parameters: TK_IDENTIFIER more_call_params
+    | LIT_CHAR more_call_params
+    | LIT_INTEGER more_call_params
+    | LIT_STRING more_call_params
+    |
+    ;
+
+more_call_params: ',' call_parameters
+    |
+    ;
 
 if_statement: KW_IF expr KW_THEN cmd_block ';'
     | KW_IF expr KW_THEN simple_cmd
