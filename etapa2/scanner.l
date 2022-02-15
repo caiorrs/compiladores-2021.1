@@ -30,7 +30,7 @@ int getLineNumber(void) {
 "read"                  {return KW_READ;}
 "print"                 {return KW_PRINT;}
 "return"                {return KW_RETURN;}
-[,;:(){}\[\]+-/*<>=]           {printf("%c\n", yytext[0]); return yytext[0];}
+[,;:/(/){}\[\]+-/*<>=]           {printf("%c\n", yytext[0]); return yytext[0];}
 "<="                  {return OPERATOR_LE;}
 ">="                  {return OPERATOR_GE;}
 "=="                  {return OPERATOR_EQ;}

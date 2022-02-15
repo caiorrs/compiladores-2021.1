@@ -24,66 +24,46 @@
 
 %token TOKEN_ERROR
 
+%left '<' '>' OPERATOR_DIF OPERATOR_EQ OPERATOR_GE OPERATOR_LE
+%left '+' '-'
+%left '*' '/'
+
 %%
 
 programa: decl
-    |
     ;
 
 decl: global_var ';' decl
-    | funcao decl
+    | function decl
     |
     ;
 
-funcao: tipo TK_IDENTIFIER '(' parametros ')' bloco_cmd ';'
+function: type TK_IDENTIFIER '(' params ')' cmd_block
     ;
 
-tipo: KW_CHAR
+type: KW_CHAR
     | KW_INT
     | KW_FLOAT
     ;
 
-parametros: tipo TK_IDENTIFIER ','
+params: type TK_IDENTIFIER more_params
     |
     ;
 
-bloco_cmd: '{' cmd_simples ';' '}'
+more_params: ',' type TK_IDENTIFIER more_params
+    |
+    ;
+
+cmd_block: '{' simple_cmd ';' '}'
     | ';'
     ;
 
-cmd_simples: TK_IDENTIFIER '=' expr cmd_simples
-    | TK_IDENTIFIER '[' expr ']' '=' expr cmd_simples
-    | KW_PRINT '(' print_values ')' cmd_simples
-    | KW_RETURN return_values cmd_simples
-    | if_statement cmd_simples
-    | while_statement cmd_simples
-    | label cmd_simples
-    | KW_READ cmd_simples
+simple_cmd: label simple_cmd
+    | KW_READ simple_cmd
     | ';'
+    |
     ;
 
-print_values: LIT_STRING
-    | expr
-    ;
-
-return_values: expr
-    ;
-
-expr: LIT_INTEGER
-    | LIT_CHAR
-    | LIT_STRING
-    | TK_IDENTIFIER
-    | expr '+' expr
-    | expr '-' expr
-    | expr '*' expr
-    | expr '/' expr
-    | expr OPERATOR_EQ expr
-    | expr OPERATOR_GE expr
-    | expr OPERATOR_LE expr
-    | expr OPERATOR_DIF expr
-    | '(' expr ')'
-    | KW_READ
-    ;
 
 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
     | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
@@ -114,17 +94,6 @@ array_size: LIT_INTEGER
     |
     ;
 
-if_statement: KW_IF expr KW_THEN bloco_cmd
-    | KW_IF expr KW_THEN cmd_simples
-    | KW_IF expr KW_THEN bloco_cmd KW_ELSE bloco_cmd
-    | KW_IF expr KW_THEN bloco_cmd KW_ELSE cmd_simples
-    | KW_IF expr KW_THEN cmd_simples KW_ELSE bloco_cmd
-    | KW_IF expr KW_THEN cmd_simples KW_ELSE cmd_simples
-    ;
-
-while_statement: KW_WHILE expr bloco_cmd
-    ;
-
 label: TK_IDENTIFIER ':'
     ;
 
@@ -133,6 +102,6 @@ label: TK_IDENTIFIER ':'
 
 int yyerror ()
 {
-  fprintf(stderr, "Syntax error at line %d.\n", getLineNumber());
+  fprintf(stderr, "Syntax error at line %d %s.\n", getLineNumber(), yytext);
   exit(3);
 }

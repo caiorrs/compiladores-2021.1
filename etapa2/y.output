@@ -1,23 +1,50 @@
+Não terminais inúteis na gramática
+
+    array
+    array_size
+
+
 Terminais sem uso na gramática
 
+    KW_IF
+    KW_THEN
+    KW_ELSE
+    KW_WHILE
     KW_GOTO
+    KW_PRINT
+    KW_RETURN
+    OPERATOR_LE
+    OPERATOR_GE
+    OPERATOR_EQ
+    OPERATOR_DIF
+    LIT_STRING
     TOKEN_ERROR
+    '<'
+    '>'
+    '+'
+    '-'
+    '*'
 
 
-Estado 0 conflitos: 1 de redução/redução
+Regras inúteis na gramática
+
+   32 array: '[' array_size ']'
+
+   33 array_size: LIT_INTEGER
+   34           | %empty
+
+
+Regras inúteis no analisador por causa de conflitos
+
+   18 simple_cmd: %empty
+
+
 Estado 1 conflitos: 1 de deslocamento/redução
 Estado 2 conflitos: 1 de deslocamento/redução
 Estado 3 conflitos: 1 de deslocamento/redução
-Estado 91 conflitos: 1 de redução/redução
-Estado 99 conflitos: 8 de redução/redução
-Estado 102 conflitos: 8 de deslocamento/redução
-Estado 103 conflitos: 8 de deslocamento/redução
-Estado 104 conflitos: 8 de deslocamento/redução
-Estado 105 conflitos: 8 de deslocamento/redução
-Estado 106 conflitos: 8 de deslocamento/redução
-Estado 107 conflitos: 8 de deslocamento/redução
-Estado 108 conflitos: 8 de deslocamento/redução
-Estado 109 conflitos: 8 de deslocamento/redução
+Estado 47 conflitos: 1 de deslocamento/redução
+Estado 52 conflitos: 1 de deslocamento/redução
+Estado 56 conflitos: 1 de deslocamento/redução
 
 
 Gramática
@@ -25,123 +52,89 @@ Gramática
     0 $accept: programa $end
 
     1 programa: decl
-    2         | %empty
 
-    3 decl: global_var ';' decl
-    4     | funcao decl
-    5     | %empty
+    2 decl: global_var ';' decl
+    3     | function decl
+    4     | %empty
 
-    6 funcao: tipo TK_IDENTIFIER '(' parametros ')' bloco_cmd ';'
+    5 function: type TK_IDENTIFIER '(' params ')' cmd_block
 
-    7 tipo: KW_CHAR
-    8     | KW_INT
-    9     | KW_FLOAT
+    6 type: KW_CHAR
+    7     | KW_INT
+    8     | KW_FLOAT
 
-   10 parametros: tipo TK_IDENTIFIER ','
-   11           | %empty
+    9 params: type TK_IDENTIFIER more_params
+   10       | %empty
 
-   12 bloco_cmd: '{' cmd_simples ';' '}'
-   13          | ';'
+   11 more_params: ',' type TK_IDENTIFIER more_params
+   12            | %empty
 
-   14 cmd_simples: TK_IDENTIFIER '=' expr cmd_simples
-   15            | TK_IDENTIFIER '[' expr ']' '=' expr cmd_simples
-   16            | KW_PRINT '(' print_values ')' cmd_simples
-   17            | KW_RETURN return_values cmd_simples
-   18            | if_statement cmd_simples
-   19            | while_statement cmd_simples
-   20            | label cmd_simples
-   21            | KW_READ cmd_simples
-   22            | ';'
+   13 cmd_block: '{' simple_cmd ';' '}'
+   14          | ';'
 
-   23 print_values: LIT_STRING
-   24             | expr
+   15 simple_cmd: label simple_cmd
+   16           | KW_READ simple_cmd
+   17           | ';'
+   18           | %empty
 
-   25 return_values: expr
+   19 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
+   20           | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+   21           | KW_INT TK_IDENTIFIER ':' arr_element
+   22           | KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+   23           | KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
 
-   26 expr: LIT_INTEGER
-   27     | LIT_CHAR
-   28     | LIT_STRING
-   29     | TK_IDENTIFIER
-   30     | expr '+' expr
-   31     | expr '-' expr
-   32     | expr '*' expr
-   33     | expr '/' expr
-   34     | expr OPERATOR_EQ expr
-   35     | expr OPERATOR_GE expr
-   36     | expr OPERATOR_LE expr
-   37     | expr OPERATOR_DIF expr
-   38     | '(' expr ')'
-   39     | KW_READ
+   24 initialized_array: ':' arr_elements
+   25                  | %empty
 
-   40 global_var: KW_CHAR TK_IDENTIFIER array ':' arr_elements
-   41           | KW_INT TK_IDENTIFIER array ':' arr_elements
-   42           | KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
+   26 arr_elements: arr_element more_elements
 
-   43 arr_elements: arr_element more_elements
-   44             | %empty
+   27 more_elements: arr_elements
+   28              | %empty
 
-   45 more_elements: ' ' arr_elements
-   46              | %empty
+   29 arr_element: LIT_INTEGER
+   30            | LIT_CHAR
 
-   47 arr_element: LIT_INTEGER
-   48            | LIT_CHAR
-
-   49 array: '[' array_size ']'
-   50      | %empty
-
-   51 array_size: LIT_INTEGER
-   52           | %empty
-
-   53 if_statement: KW_IF expr KW_THEN bloco_cmd
-   54             | KW_IF expr KW_THEN cmd_simples
-   55             | KW_IF expr KW_THEN bloco_cmd KW_ELSE bloco_cmd
-   56             | KW_IF expr KW_THEN bloco_cmd KW_ELSE cmd_simples
-   57             | KW_IF expr KW_THEN cmd_simples KW_ELSE bloco_cmd
-   58             | KW_IF expr KW_THEN cmd_simples KW_ELSE cmd_simples
-
-   59 while_statement: KW_WHILE expr bloco_cmd
-
-   60 label: TK_IDENTIFIER ':'
+   31 label: TK_IDENTIFIER ':'
 
 
 Terminais, com as regras onde eles aparecem
 
     $end (0) 0
-    ' ' (32) 45
-    '(' (40) 6 16 38
-    ')' (41) 6 16 38
-    '*' (42) 32
-    '+' (43) 30
-    ',' (44) 10
-    '-' (45) 31
-    '/' (47) 33 42
-    ':' (58) 40 41 42 60
-    ';' (59) 3 6 12 13 22
-    '=' (61) 14 15
-    '[' (91) 15 49
-    ']' (93) 15 49
-    '{' (123) 12
-    '}' (125) 12
+    '(' (40) 5
+    ')' (41) 5
+    '*' (42)
+    '+' (43)
+    ',' (44) 11
+    '-' (45)
+    '/' (47) 23
+    ':' (58) 19 21 23 24 31
+    ';' (59) 2 13 14 17
+    '<' (60)
+    '>' (62)
+    '[' (91) 20 22
+    ']' (93) 20 22
+    '{' (123) 13
+    '}' (125) 13
     error (256)
-    KW_CHAR (258) 7 40
-    KW_INT (259) 8 41
-    KW_FLOAT (260) 9 42
-    KW_IF (261) 53 54 55 56 57 58
-    KW_THEN (262) 53 54 55 56 57 58
-    KW_ELSE (263) 55 56 57 58
-    KW_WHILE (264) 59
+    KW_CHAR (258) 6 19 20
+    KW_INT (259) 7 21 22
+    KW_FLOAT (260) 8 23
+    KW_IF (261)
+    KW_THEN (262)
+    KW_ELSE (263)
+    KW_WHILE (264)
     KW_GOTO (265)
-    KW_READ (266) 21 39
-    KW_PRINT (267) 16
-    KW_RETURN (268) 17
-    OPERATOR_LE (269) 36
-    OPERATOR_GE (270) 35
-    OPERATOR_EQ (271) 34
-    OPERATOR_DIF (272) 37
-    TK_IDENTIFIER (273) 6 10 14 15 29 40 41 42 60
-    LIT_INTEGER (274) 26 42 47 51
-    LIT_CHAR (275) 27 48
-    LIT_STRING (276) 23 28
+    KW_READ (266) 16
+    KW_PRINT (267)
+    KW_RETURN (268)
+    OPERATOR_LE (269)
+    OPERATOR_GE (270)
+    OPERATOR_EQ (271)
+    OPERATOR_DIF (272)
+    TK_IDENTIFIER (273) 5 9 11 19 20 21 22 23 31
+    LIT_INTEGER (274) 20 22 23 29
+    LIT_CHAR (275) 30
+    LIT_STRING (276)
     TOKEN_ERROR (277)
 
 
@@ -150,62 +143,47 @@ Não terminais com as regras onde eles aparecem
     $accept (38)
         à esquerda: 0
     programa (39)
-        à esquerda: 1 2
+        à esquerda: 1
         à direita: 0
     decl (40)
-        à esquerda: 3 4 5
-        à direita: 1 3 4
-    funcao (41)
-        à esquerda: 6
-        à direita: 4
-    tipo (42)
-        à esquerda: 7 8 9
-        à direita: 6 10
-    parametros (43)
-        à esquerda: 10 11
-        à direita: 6
-    bloco_cmd (44)
-        à esquerda: 12 13
-        à direita: 6 53 55 56 57 59
-    cmd_simples (45)
-        à esquerda: 14 15 16 17 18 19 20 21 22
-        à direita: 12 14 15 16 17 18 19 20 21 54 56 57 58
-    print_values (46)
-        à esquerda: 23 24
-        à direita: 16
-    return_values (47)
-        à esquerda: 25
-        à direita: 17
-    expr (48)
-        à esquerda: 26 27 28 29 30 31 32 33 34 35 36 37 38 39
-        à direita: 14 15 24 25 30 31 32 33 34 35 36 37 38 53 54 55 56 57 58 59
-    global_var (49)
-        à esquerda: 40 41 42
+        à esquerda: 2 3 4
+        à direita: 1 2 3
+    function (41)
+        à esquerda: 5
         à direita: 3
-    arr_elements (50)
-        à esquerda: 43 44
-        à direita: 40 41 45
-    more_elements (51)
-        à esquerda: 45 46
-        à direita: 43
-    arr_element (52)
-        à esquerda: 47 48
-        à direita: 43
-    array (53)
-        à esquerda: 49 50
-        à direita: 40 41
-    array_size (54)
-        à esquerda: 51 52
-        à direita: 49
-    if_statement (55)
-        à esquerda: 53 54 55 56 57 58
-        à direita: 18
-    while_statement (56)
-        à esquerda: 59
-        à direita: 19
-    label (57)
-        à esquerda: 60
-        à direita: 20
+    type (42)
+        à esquerda: 6 7 8
+        à direita: 5 9 11
+    params (43)
+        à esquerda: 9 10
+        à direita: 5
+    more_params (44)
+        à esquerda: 11 12
+        à direita: 9 11
+    cmd_block (45)
+        à esquerda: 13 14
+        à direita: 5
+    simple_cmd (46)
+        à esquerda: 15 16 17 18
+        à direita: 13 15 16
+    global_var (47)
+        à esquerda: 19 20 21 22 23
+        à direita: 2
+    initialized_array (48)
+        à esquerda: 24 25
+        à direita: 20 22
+    arr_elements (49)
+        à esquerda: 26
+        à direita: 24 27
+    more_elements (50)
+        à esquerda: 27 28
+        à direita: 26
+    arr_element (51)
+        à esquerda: 29 30
+        à direita: 19 21 26
+    label (52)
+        à esquerda: 31
+        à direita: 15
 
 
 Estado 0
@@ -216,45 +194,45 @@ Estado 0
     KW_INT    deslocar, e ir ao estado 2
     KW_FLOAT  deslocar, e ir ao estado 3
 
-    $end      reduzir usando a regra 2 (programa)
-    $end      [reduzir usando a regra 5 (decl)]
-    $padrão  reduzir usando a regra 2 (programa)
+    $padrão  reduzir usando a regra 4 (decl)
 
     programa    ir ao estado 4
     decl        ir ao estado 5
-    funcao      ir ao estado 6
-    tipo        ir ao estado 7
+    function    ir ao estado 6
+    type        ir ao estado 7
     global_var  ir ao estado 8
 
 
 Estado 1
 
-    7 tipo: KW_CHAR .
-   40 global_var: KW_CHAR . TK_IDENTIFIER array ':' arr_elements
+    6 type: KW_CHAR .
+   19 global_var: KW_CHAR . TK_IDENTIFIER ':' arr_element
+   20           | KW_CHAR . TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
 
     TK_IDENTIFIER  deslocar, e ir ao estado 9
 
-    TK_IDENTIFIER  [reduzir usando a regra 7 (tipo)]
+    TK_IDENTIFIER  [reduzir usando a regra 6 (type)]
 
 
 Estado 2
 
-    8 tipo: KW_INT .
-   41 global_var: KW_INT . TK_IDENTIFIER array ':' arr_elements
+    7 type: KW_INT .
+   21 global_var: KW_INT . TK_IDENTIFIER ':' arr_element
+   22           | KW_INT . TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
 
     TK_IDENTIFIER  deslocar, e ir ao estado 10
 
-    TK_IDENTIFIER  [reduzir usando a regra 8 (tipo)]
+    TK_IDENTIFIER  [reduzir usando a regra 7 (type)]
 
 
 Estado 3
 
-    9 tipo: KW_FLOAT .
-   42 global_var: KW_FLOAT . TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
+    8 type: KW_FLOAT .
+   23 global_var: KW_FLOAT . TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
 
     TK_IDENTIFIER  deslocar, e ir ao estado 11
 
-    TK_IDENTIFIER  [reduzir usando a regra 9 (tipo)]
+    TK_IDENTIFIER  [reduzir usando a regra 8 (type)]
 
 
 Estado 4
@@ -273,61 +251,57 @@ Estado 5
 
 Estado 6
 
-    4 decl: funcao . decl
+    3 decl: function . decl
 
     KW_CHAR   deslocar, e ir ao estado 1
     KW_INT    deslocar, e ir ao estado 2
     KW_FLOAT  deslocar, e ir ao estado 3
 
-    $padrão  reduzir usando a regra 5 (decl)
+    $padrão  reduzir usando a regra 4 (decl)
 
     decl        ir ao estado 13
-    funcao      ir ao estado 6
-    tipo        ir ao estado 7
+    function    ir ao estado 6
+    type        ir ao estado 7
     global_var  ir ao estado 8
 
 
 Estado 7
 
-    6 funcao: tipo . TK_IDENTIFIER '(' parametros ')' bloco_cmd ';'
+    5 function: type . TK_IDENTIFIER '(' params ')' cmd_block
 
     TK_IDENTIFIER  deslocar, e ir ao estado 14
 
 
 Estado 8
 
-    3 decl: global_var . ';' decl
+    2 decl: global_var . ';' decl
 
     ';'  deslocar, e ir ao estado 15
 
 
 Estado 9
 
-   40 global_var: KW_CHAR TK_IDENTIFIER . array ':' arr_elements
+   19 global_var: KW_CHAR TK_IDENTIFIER . ':' arr_element
+   20           | KW_CHAR TK_IDENTIFIER . '[' LIT_INTEGER ']' initialized_array
 
-    '['  deslocar, e ir ao estado 16
-
-    $padrão  reduzir usando a regra 50 (array)
-
-    array  ir ao estado 17
+    ':'  deslocar, e ir ao estado 16
+    '['  deslocar, e ir ao estado 17
 
 
 Estado 10
 
-   41 global_var: KW_INT TK_IDENTIFIER . array ':' arr_elements
+   21 global_var: KW_INT TK_IDENTIFIER . ':' arr_element
+   22           | KW_INT TK_IDENTIFIER . '[' LIT_INTEGER ']' initialized_array
 
-    '['  deslocar, e ir ao estado 16
-
-    $padrão  reduzir usando a regra 50 (array)
-
-    array  ir ao estado 18
+    ':'  deslocar, e ir ao estado 18
+    '['  deslocar, e ir ao estado 19
 
 
 Estado 11
 
-   42 global_var: KW_FLOAT TK_IDENTIFIER . ':' LIT_INTEGER '/' LIT_INTEGER
+   23 global_var: KW_FLOAT TK_IDENTIFIER . ':' LIT_INTEGER '/' LIT_INTEGER
 
-    ':'  deslocar, e ir ao estado 19
+    ':'  deslocar, e ir ao estado 20
 
 
 Estado 12
@@ -339,1448 +313,447 @@ Estado 12
 
 Estado 13
 
-    4 decl: funcao decl .
+    3 decl: function decl .
 
-    $padrão  reduzir usando a regra 4 (decl)
+    $padrão  reduzir usando a regra 3 (decl)
 
 
 Estado 14
 
-    6 funcao: tipo TK_IDENTIFIER . '(' parametros ')' bloco_cmd ';'
+    5 function: type TK_IDENTIFIER . '(' params ')' cmd_block
 
-    '('  deslocar, e ir ao estado 20
+    '('  deslocar, e ir ao estado 21
 
 
 Estado 15
 
-    3 decl: global_var ';' . decl
+    2 decl: global_var ';' . decl
 
     KW_CHAR   deslocar, e ir ao estado 1
     KW_INT    deslocar, e ir ao estado 2
     KW_FLOAT  deslocar, e ir ao estado 3
 
-    $padrão  reduzir usando a regra 5 (decl)
+    $padrão  reduzir usando a regra 4 (decl)
 
-    decl        ir ao estado 21
-    funcao      ir ao estado 6
-    tipo        ir ao estado 7
+    decl        ir ao estado 22
+    function    ir ao estado 6
+    type        ir ao estado 7
     global_var  ir ao estado 8
 
 
 Estado 16
 
-   49 array: '[' . array_size ']'
+   19 global_var: KW_CHAR TK_IDENTIFIER ':' . arr_element
 
-    LIT_INTEGER  deslocar, e ir ao estado 22
+    LIT_INTEGER  deslocar, e ir ao estado 23
+    LIT_CHAR     deslocar, e ir ao estado 24
 
-    $padrão  reduzir usando a regra 52 (array_size)
-
-    array_size  ir ao estado 23
+    arr_element  ir ao estado 25
 
 
 Estado 17
 
-   40 global_var: KW_CHAR TK_IDENTIFIER array . ':' arr_elements
-
-    ':'  deslocar, e ir ao estado 24
-
-
-Estado 18
-
-   41 global_var: KW_INT TK_IDENTIFIER array . ':' arr_elements
-
-    ':'  deslocar, e ir ao estado 25
-
-
-Estado 19
-
-   42 global_var: KW_FLOAT TK_IDENTIFIER ':' . LIT_INTEGER '/' LIT_INTEGER
+   20 global_var: KW_CHAR TK_IDENTIFIER '[' . LIT_INTEGER ']' initialized_array
 
     LIT_INTEGER  deslocar, e ir ao estado 26
 
 
+Estado 18
+
+   21 global_var: KW_INT TK_IDENTIFIER ':' . arr_element
+
+    LIT_INTEGER  deslocar, e ir ao estado 23
+    LIT_CHAR     deslocar, e ir ao estado 24
+
+    arr_element  ir ao estado 27
+
+
+Estado 19
+
+   22 global_var: KW_INT TK_IDENTIFIER '[' . LIT_INTEGER ']' initialized_array
+
+    LIT_INTEGER  deslocar, e ir ao estado 28
+
+
 Estado 20
 
-    6 funcao: tipo TK_IDENTIFIER '(' . parametros ')' bloco_cmd ';'
+   23 global_var: KW_FLOAT TK_IDENTIFIER ':' . LIT_INTEGER '/' LIT_INTEGER
 
-    KW_CHAR   deslocar, e ir ao estado 27
-    KW_INT    deslocar, e ir ao estado 28
-    KW_FLOAT  deslocar, e ir ao estado 29
-
-    $padrão  reduzir usando a regra 11 (parametros)
-
-    tipo        ir ao estado 30
-    parametros  ir ao estado 31
+    LIT_INTEGER  deslocar, e ir ao estado 29
 
 
 Estado 21
 
-    3 decl: global_var ';' decl .
+    5 function: type TK_IDENTIFIER '(' . params ')' cmd_block
 
-    $padrão  reduzir usando a regra 3 (decl)
+    KW_CHAR   deslocar, e ir ao estado 30
+    KW_INT    deslocar, e ir ao estado 31
+    KW_FLOAT  deslocar, e ir ao estado 32
+
+    $padrão  reduzir usando a regra 10 (params)
+
+    type    ir ao estado 33
+    params  ir ao estado 34
 
 
 Estado 22
 
-   51 array_size: LIT_INTEGER .
+    2 decl: global_var ';' decl .
 
-    $padrão  reduzir usando a regra 51 (array_size)
+    $padrão  reduzir usando a regra 2 (decl)
 
 
 Estado 23
 
-   49 array: '[' array_size . ']'
+   29 arr_element: LIT_INTEGER .
 
-    ']'  deslocar, e ir ao estado 32
+    $padrão  reduzir usando a regra 29 (arr_element)
 
 
 Estado 24
 
-   40 global_var: KW_CHAR TK_IDENTIFIER array ':' . arr_elements
+   30 arr_element: LIT_CHAR .
 
-    LIT_INTEGER  deslocar, e ir ao estado 33
-    LIT_CHAR     deslocar, e ir ao estado 34
-
-    $padrão  reduzir usando a regra 44 (arr_elements)
-
-    arr_elements  ir ao estado 35
-    arr_element   ir ao estado 36
+    $padrão  reduzir usando a regra 30 (arr_element)
 
 
 Estado 25
 
-   41 global_var: KW_INT TK_IDENTIFIER array ':' . arr_elements
+   19 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element .
 
-    LIT_INTEGER  deslocar, e ir ao estado 33
-    LIT_CHAR     deslocar, e ir ao estado 34
-
-    $padrão  reduzir usando a regra 44 (arr_elements)
-
-    arr_elements  ir ao estado 37
-    arr_element   ir ao estado 36
+    $padrão  reduzir usando a regra 19 (global_var)
 
 
 Estado 26
 
-   42 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER . '/' LIT_INTEGER
+   20 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER . ']' initialized_array
 
-    '/'  deslocar, e ir ao estado 38
+    ']'  deslocar, e ir ao estado 35
 
 
 Estado 27
 
-    7 tipo: KW_CHAR .
+   21 global_var: KW_INT TK_IDENTIFIER ':' arr_element .
 
-    $padrão  reduzir usando a regra 7 (tipo)
+    $padrão  reduzir usando a regra 21 (global_var)
 
 
 Estado 28
 
-    8 tipo: KW_INT .
+   22 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER . ']' initialized_array
 
-    $padrão  reduzir usando a regra 8 (tipo)
+    ']'  deslocar, e ir ao estado 36
 
 
 Estado 29
 
-    9 tipo: KW_FLOAT .
+   23 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER . '/' LIT_INTEGER
 
-    $padrão  reduzir usando a regra 9 (tipo)
+    '/'  deslocar, e ir ao estado 37
 
 
 Estado 30
 
-   10 parametros: tipo . TK_IDENTIFIER ','
+    6 type: KW_CHAR .
 
-    TK_IDENTIFIER  deslocar, e ir ao estado 39
+    $padrão  reduzir usando a regra 6 (type)
 
 
 Estado 31
 
-    6 funcao: tipo TK_IDENTIFIER '(' parametros . ')' bloco_cmd ';'
+    7 type: KW_INT .
 
-    ')'  deslocar, e ir ao estado 40
+    $padrão  reduzir usando a regra 7 (type)
 
 
 Estado 32
 
-   49 array: '[' array_size ']' .
+    8 type: KW_FLOAT .
 
-    $padrão  reduzir usando a regra 49 (array)
+    $padrão  reduzir usando a regra 8 (type)
 
 
 Estado 33
 
-   47 arr_element: LIT_INTEGER .
+    9 params: type . TK_IDENTIFIER more_params
 
-    $padrão  reduzir usando a regra 47 (arr_element)
+    TK_IDENTIFIER  deslocar, e ir ao estado 38
 
 
 Estado 34
 
-   48 arr_element: LIT_CHAR .
+    5 function: type TK_IDENTIFIER '(' params . ')' cmd_block
 
-    $padrão  reduzir usando a regra 48 (arr_element)
+    ')'  deslocar, e ir ao estado 39
 
 
 Estado 35
 
-   40 global_var: KW_CHAR TK_IDENTIFIER array ':' arr_elements .
+   20 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' . initialized_array
 
-    $padrão  reduzir usando a regra 40 (global_var)
+    ':'  deslocar, e ir ao estado 40
+
+    $padrão  reduzir usando a regra 25 (initialized_array)
+
+    initialized_array  ir ao estado 41
 
 
 Estado 36
 
-   43 arr_elements: arr_element . more_elements
+   22 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' . initialized_array
 
-    ' '  deslocar, e ir ao estado 41
+    ':'  deslocar, e ir ao estado 40
 
-    $padrão  reduzir usando a regra 46 (more_elements)
+    $padrão  reduzir usando a regra 25 (initialized_array)
 
-    more_elements  ir ao estado 42
+    initialized_array  ir ao estado 42
 
 
 Estado 37
 
-   41 global_var: KW_INT TK_IDENTIFIER array ':' arr_elements .
-
-    $padrão  reduzir usando a regra 41 (global_var)
-
-
-Estado 38
-
-   42 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' . LIT_INTEGER
+   23 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' . LIT_INTEGER
 
     LIT_INTEGER  deslocar, e ir ao estado 43
 
 
-Estado 39
+Estado 38
 
-   10 parametros: tipo TK_IDENTIFIER . ','
+    9 params: type TK_IDENTIFIER . more_params
 
     ','  deslocar, e ir ao estado 44
+
+    $padrão  reduzir usando a regra 12 (more_params)
+
+    more_params  ir ao estado 45
+
+
+Estado 39
+
+    5 function: type TK_IDENTIFIER '(' params ')' . cmd_block
+
+    ';'  deslocar, e ir ao estado 46
+    '{'  deslocar, e ir ao estado 47
+
+    cmd_block  ir ao estado 48
 
 
 Estado 40
 
-    6 funcao: tipo TK_IDENTIFIER '(' parametros ')' . bloco_cmd ';'
+   24 initialized_array: ':' . arr_elements
 
-    ';'  deslocar, e ir ao estado 45
-    '{'  deslocar, e ir ao estado 46
+    LIT_INTEGER  deslocar, e ir ao estado 23
+    LIT_CHAR     deslocar, e ir ao estado 24
 
-    bloco_cmd  ir ao estado 47
+    arr_elements  ir ao estado 49
+    arr_element   ir ao estado 50
 
 
 Estado 41
 
-   45 more_elements: ' ' . arr_elements
+   20 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array .
 
-    LIT_INTEGER  deslocar, e ir ao estado 33
-    LIT_CHAR     deslocar, e ir ao estado 34
-
-    $padrão  reduzir usando a regra 44 (arr_elements)
-
-    arr_elements  ir ao estado 48
-    arr_element   ir ao estado 36
+    $padrão  reduzir usando a regra 20 (global_var)
 
 
 Estado 42
 
-   43 arr_elements: arr_element more_elements .
+   22 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array .
 
-    $padrão  reduzir usando a regra 43 (arr_elements)
+    $padrão  reduzir usando a regra 22 (global_var)
 
 
 Estado 43
 
-   42 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER .
+   23 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER .
 
-    $padrão  reduzir usando a regra 42 (global_var)
+    $padrão  reduzir usando a regra 23 (global_var)
 
 
 Estado 44
 
-   10 parametros: tipo TK_IDENTIFIER ',' .
+   11 more_params: ',' . type TK_IDENTIFIER more_params
 
-    $padrão  reduzir usando a regra 10 (parametros)
+    KW_CHAR   deslocar, e ir ao estado 30
+    KW_INT    deslocar, e ir ao estado 31
+    KW_FLOAT  deslocar, e ir ao estado 32
+
+    type  ir ao estado 51
 
 
 Estado 45
 
-   13 bloco_cmd: ';' .
+    9 params: type TK_IDENTIFIER more_params .
 
-    $padrão  reduzir usando a regra 13 (bloco_cmd)
+    $padrão  reduzir usando a regra 9 (params)
 
 
 Estado 46
 
-   12 bloco_cmd: '{' . cmd_simples ';' '}'
+   14 cmd_block: ';' .
 
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 56
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
+    $padrão  reduzir usando a regra 14 (cmd_block)
 
 
 Estado 47
 
-    6 funcao: tipo TK_IDENTIFIER '(' parametros ')' bloco_cmd . ';'
+   13 cmd_block: '{' . simple_cmd ';' '}'
 
-    ';'  deslocar, e ir ao estado 60
+    KW_READ        deslocar, e ir ao estado 52
+    TK_IDENTIFIER  deslocar, e ir ao estado 53
+    ';'            deslocar, e ir ao estado 54
+
+    ';'  [reduzir usando a regra 18 (simple_cmd)]
+
+    simple_cmd  ir ao estado 55
+    label       ir ao estado 56
 
 
 Estado 48
 
-   45 more_elements: ' ' arr_elements .
+    5 function: type TK_IDENTIFIER '(' params ')' cmd_block .
 
-    $padrão  reduzir usando a regra 45 (more_elements)
+    $padrão  reduzir usando a regra 5 (function)
 
 
 Estado 49
 
-   53 if_statement: KW_IF . expr KW_THEN bloco_cmd
-   54             | KW_IF . expr KW_THEN cmd_simples
-   55             | KW_IF . expr KW_THEN bloco_cmd KW_ELSE bloco_cmd
-   56             | KW_IF . expr KW_THEN bloco_cmd KW_ELSE cmd_simples
-   57             | KW_IF . expr KW_THEN cmd_simples KW_ELSE bloco_cmd
-   58             | KW_IF . expr KW_THEN cmd_simples KW_ELSE cmd_simples
+   24 initialized_array: ':' arr_elements .
 
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 67
+    $padrão  reduzir usando a regra 24 (initialized_array)
 
 
 Estado 50
 
-   59 while_statement: KW_WHILE . expr bloco_cmd
+   26 arr_elements: arr_element . more_elements
 
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
+    LIT_INTEGER  deslocar, e ir ao estado 23
+    LIT_CHAR     deslocar, e ir ao estado 24
 
-    expr  ir ao estado 68
+    $padrão  reduzir usando a regra 28 (more_elements)
+
+    arr_elements   ir ao estado 57
+    more_elements  ir ao estado 58
+    arr_element    ir ao estado 50
 
 
 Estado 51
 
-   21 cmd_simples: KW_READ . cmd_simples
+   11 more_params: ',' type . TK_IDENTIFIER more_params
 
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 69
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
+    TK_IDENTIFIER  deslocar, e ir ao estado 59
 
 
 Estado 52
 
-   16 cmd_simples: KW_PRINT . '(' print_values ')' cmd_simples
+   16 simple_cmd: KW_READ . simple_cmd
 
-    '('  deslocar, e ir ao estado 70
+    KW_READ        deslocar, e ir ao estado 52
+    TK_IDENTIFIER  deslocar, e ir ao estado 53
+    ';'            deslocar, e ir ao estado 54
+
+    ';'  [reduzir usando a regra 18 (simple_cmd)]
+
+    simple_cmd  ir ao estado 60
+    label       ir ao estado 56
 
 
 Estado 53
 
-   17 cmd_simples: KW_RETURN . return_values cmd_simples
+   31 label: TK_IDENTIFIER . ':'
 
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    return_values  ir ao estado 71
-    expr           ir ao estado 72
+    ':'  deslocar, e ir ao estado 61
 
 
 Estado 54
 
-   14 cmd_simples: TK_IDENTIFIER . '=' expr cmd_simples
-   15            | TK_IDENTIFIER . '[' expr ']' '=' expr cmd_simples
-   60 label: TK_IDENTIFIER . ':'
+   17 simple_cmd: ';' .
 
-    '='  deslocar, e ir ao estado 73
-    '['  deslocar, e ir ao estado 74
-    ':'  deslocar, e ir ao estado 75
+    $padrão  reduzir usando a regra 17 (simple_cmd)
 
 
 Estado 55
 
-   22 cmd_simples: ';' .
+   13 cmd_block: '{' simple_cmd . ';' '}'
 
-    $padrão  reduzir usando a regra 22 (cmd_simples)
+    ';'  deslocar, e ir ao estado 62
 
 
 Estado 56
 
-   12 bloco_cmd: '{' cmd_simples . ';' '}'
+   15 simple_cmd: label . simple_cmd
 
-    ';'  deslocar, e ir ao estado 76
+    KW_READ        deslocar, e ir ao estado 52
+    TK_IDENTIFIER  deslocar, e ir ao estado 53
+    ';'            deslocar, e ir ao estado 54
+
+    ';'  [reduzir usando a regra 18 (simple_cmd)]
+
+    simple_cmd  ir ao estado 63
+    label       ir ao estado 56
 
 
 Estado 57
 
-   18 cmd_simples: if_statement . cmd_simples
+   27 more_elements: arr_elements .
 
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 77
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
+    $padrão  reduzir usando a regra 27 (more_elements)
 
 
 Estado 58
 
-   19 cmd_simples: while_statement . cmd_simples
+   26 arr_elements: arr_element more_elements .
 
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 78
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
+    $padrão  reduzir usando a regra 26 (arr_elements)
 
 
 Estado 59
 
-   20 cmd_simples: label . cmd_simples
+   11 more_params: ',' type TK_IDENTIFIER . more_params
 
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
+    ','  deslocar, e ir ao estado 44
 
-    cmd_simples      ir ao estado 79
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
+    $padrão  reduzir usando a regra 12 (more_params)
+
+    more_params  ir ao estado 64
 
 
 Estado 60
 
-    6 funcao: tipo TK_IDENTIFIER '(' parametros ')' bloco_cmd ';' .
+   16 simple_cmd: KW_READ simple_cmd .
 
-    $padrão  reduzir usando a regra 6 (funcao)
+    $padrão  reduzir usando a regra 16 (simple_cmd)
 
 
 Estado 61
 
-   39 expr: KW_READ .
+   31 label: TK_IDENTIFIER ':' .
 
-    $padrão  reduzir usando a regra 39 (expr)
+    $padrão  reduzir usando a regra 31 (label)
 
 
 Estado 62
 
-   29 expr: TK_IDENTIFIER .
+   13 cmd_block: '{' simple_cmd ';' . '}'
 
-    $padrão  reduzir usando a regra 29 (expr)
+    '}'  deslocar, e ir ao estado 65
 
 
 Estado 63
 
-   26 expr: LIT_INTEGER .
+   15 simple_cmd: label simple_cmd .
 
-    $padrão  reduzir usando a regra 26 (expr)
+    $padrão  reduzir usando a regra 15 (simple_cmd)
 
 
 Estado 64
 
-   27 expr: LIT_CHAR .
+   11 more_params: ',' type TK_IDENTIFIER more_params .
 
-    $padrão  reduzir usando a regra 27 (expr)
+    $padrão  reduzir usando a regra 11 (more_params)
 
 
 Estado 65
 
-   28 expr: LIT_STRING .
+   13 cmd_block: '{' simple_cmd ';' '}' .
 
-    $padrão  reduzir usando a regra 28 (expr)
-
-
-Estado 66
-
-   38 expr: '(' . expr ')'
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 80
-
-
-Estado 67
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-   53 if_statement: KW_IF expr . KW_THEN bloco_cmd
-   54             | KW_IF expr . KW_THEN cmd_simples
-   55             | KW_IF expr . KW_THEN bloco_cmd KW_ELSE bloco_cmd
-   56             | KW_IF expr . KW_THEN bloco_cmd KW_ELSE cmd_simples
-   57             | KW_IF expr . KW_THEN cmd_simples KW_ELSE bloco_cmd
-   58             | KW_IF expr . KW_THEN cmd_simples KW_ELSE cmd_simples
-
-    KW_THEN       deslocar, e ir ao estado 81
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-
-Estado 68
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-   59 while_statement: KW_WHILE expr . bloco_cmd
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    ';'           deslocar, e ir ao estado 45
-    '{'           deslocar, e ir ao estado 46
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    bloco_cmd  ir ao estado 90
-
-
-Estado 69
-
-   21 cmd_simples: KW_READ cmd_simples .
-
-    $padrão  reduzir usando a regra 21 (cmd_simples)
-
-
-Estado 70
-
-   16 cmd_simples: KW_PRINT '(' . print_values ')' cmd_simples
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 91
-    '('            deslocar, e ir ao estado 66
-
-    print_values  ir ao estado 92
-    expr          ir ao estado 93
-
-
-Estado 71
-
-   17 cmd_simples: KW_RETURN return_values . cmd_simples
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 94
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 72
-
-   25 return_values: expr .
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    $padrão  reduzir usando a regra 25 (return_values)
-
-
-Estado 73
-
-   14 cmd_simples: TK_IDENTIFIER '=' . expr cmd_simples
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 95
-
-
-Estado 74
-
-   15 cmd_simples: TK_IDENTIFIER '[' . expr ']' '=' expr cmd_simples
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 96
-
-
-Estado 75
-
-   60 label: TK_IDENTIFIER ':' .
-
-    $padrão  reduzir usando a regra 60 (label)
-
-
-Estado 76
-
-   12 bloco_cmd: '{' cmd_simples ';' . '}'
-
-    '}'  deslocar, e ir ao estado 97
-
-
-Estado 77
-
-   18 cmd_simples: if_statement cmd_simples .
-
-    $padrão  reduzir usando a regra 18 (cmd_simples)
-
-
-Estado 78
-
-   19 cmd_simples: while_statement cmd_simples .
-
-    $padrão  reduzir usando a regra 19 (cmd_simples)
-
-
-Estado 79
-
-   20 cmd_simples: label cmd_simples .
-
-    $padrão  reduzir usando a regra 20 (cmd_simples)
-
-
-Estado 80
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-   38     | '(' expr . ')'
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    ')'           deslocar, e ir ao estado 98
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-
-Estado 81
-
-   53 if_statement: KW_IF expr KW_THEN . bloco_cmd
-   54             | KW_IF expr KW_THEN . cmd_simples
-   55             | KW_IF expr KW_THEN . bloco_cmd KW_ELSE bloco_cmd
-   56             | KW_IF expr KW_THEN . bloco_cmd KW_ELSE cmd_simples
-   57             | KW_IF expr KW_THEN . cmd_simples KW_ELSE bloco_cmd
-   58             | KW_IF expr KW_THEN . cmd_simples KW_ELSE cmd_simples
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 99
-    '{'            deslocar, e ir ao estado 46
-
-    bloco_cmd        ir ao estado 100
-    cmd_simples      ir ao estado 101
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 82
-
-   36 expr: expr OPERATOR_LE . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 102
-
-
-Estado 83
-
-   35 expr: expr OPERATOR_GE . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 103
-
-
-Estado 84
-
-   34 expr: expr OPERATOR_EQ . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 104
-
-
-Estado 85
-
-   37 expr: expr OPERATOR_DIF . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 105
-
-
-Estado 86
-
-   30 expr: expr '+' . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 106
-
-
-Estado 87
-
-   31 expr: expr '-' . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 107
-
-
-Estado 88
-
-   32 expr: expr '*' . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 108
-
-
-Estado 89
-
-   33 expr: expr '/' . expr
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 109
-
-
-Estado 90
-
-   59 while_statement: KW_WHILE expr bloco_cmd .
-
-    $padrão  reduzir usando a regra 59 (while_statement)
-
-
-Estado 91
-
-   23 print_values: LIT_STRING .
-   28 expr: LIT_STRING .
-
-    ')'       reduzir usando a regra 23 (print_values)
-    ')'       [reduzir usando a regra 28 (expr)]
-    $padrão  reduzir usando a regra 28 (expr)
-
-
-Estado 92
-
-   16 cmd_simples: KW_PRINT '(' print_values . ')' cmd_simples
-
-    ')'  deslocar, e ir ao estado 110
-
-
-Estado 93
-
-   24 print_values: expr .
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    $padrão  reduzir usando a regra 24 (print_values)
-
-
-Estado 94
-
-   17 cmd_simples: KW_RETURN return_values cmd_simples .
-
-    $padrão  reduzir usando a regra 17 (cmd_simples)
-
-
-Estado 95
-
-   14 cmd_simples: TK_IDENTIFIER '=' expr . cmd_simples
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    OPERATOR_LE    deslocar, e ir ao estado 82
-    OPERATOR_GE    deslocar, e ir ao estado 83
-    OPERATOR_EQ    deslocar, e ir ao estado 84
-    OPERATOR_DIF   deslocar, e ir ao estado 85
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-    '+'            deslocar, e ir ao estado 86
-    '-'            deslocar, e ir ao estado 87
-    '*'            deslocar, e ir ao estado 88
-    '/'            deslocar, e ir ao estado 89
-
-    cmd_simples      ir ao estado 111
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 96
-
-   15 cmd_simples: TK_IDENTIFIER '[' expr . ']' '=' expr cmd_simples
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    ']'           deslocar, e ir ao estado 112
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-
-Estado 97
-
-   12 bloco_cmd: '{' cmd_simples ';' '}' .
-
-    $padrão  reduzir usando a regra 12 (bloco_cmd)
-
-
-Estado 98
-
-   38 expr: '(' expr ')' .
-
-    $padrão  reduzir usando a regra 38 (expr)
-
-
-Estado 99
-
-   13 bloco_cmd: ';' .
-   22 cmd_simples: ';' .
-
-    KW_IF          reduzir usando a regra 13 (bloco_cmd)
-    KW_IF          [reduzir usando a regra 22 (cmd_simples)]
-    KW_ELSE        reduzir usando a regra 13 (bloco_cmd)
-    KW_ELSE        [reduzir usando a regra 22 (cmd_simples)]
-    KW_WHILE       reduzir usando a regra 13 (bloco_cmd)
-    KW_WHILE       [reduzir usando a regra 22 (cmd_simples)]
-    KW_READ        reduzir usando a regra 13 (bloco_cmd)
-    KW_READ        [reduzir usando a regra 22 (cmd_simples)]
-    KW_PRINT       reduzir usando a regra 13 (bloco_cmd)
-    KW_PRINT       [reduzir usando a regra 22 (cmd_simples)]
-    KW_RETURN      reduzir usando a regra 13 (bloco_cmd)
-    KW_RETURN      [reduzir usando a regra 22 (cmd_simples)]
-    TK_IDENTIFIER  reduzir usando a regra 13 (bloco_cmd)
-    TK_IDENTIFIER  [reduzir usando a regra 22 (cmd_simples)]
-    ';'            reduzir usando a regra 13 (bloco_cmd)
-    ';'            [reduzir usando a regra 22 (cmd_simples)]
-    $padrão       reduzir usando a regra 13 (bloco_cmd)
-
-
-Estado 100
-
-   53 if_statement: KW_IF expr KW_THEN bloco_cmd .
-   55             | KW_IF expr KW_THEN bloco_cmd . KW_ELSE bloco_cmd
-   56             | KW_IF expr KW_THEN bloco_cmd . KW_ELSE cmd_simples
-
-    KW_ELSE  deslocar, e ir ao estado 113
-
-    $padrão  reduzir usando a regra 53 (if_statement)
-
-
-Estado 101
-
-   54 if_statement: KW_IF expr KW_THEN cmd_simples .
-   57             | KW_IF expr KW_THEN cmd_simples . KW_ELSE bloco_cmd
-   58             | KW_IF expr KW_THEN cmd_simples . KW_ELSE cmd_simples
-
-    KW_ELSE  deslocar, e ir ao estado 114
-
-    $padrão  reduzir usando a regra 54 (if_statement)
-
-
-Estado 102
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   36     | expr OPERATOR_LE expr .
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 36 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 36 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 36 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 36 (expr)]
-    '+'           [reduzir usando a regra 36 (expr)]
-    '-'           [reduzir usando a regra 36 (expr)]
-    '*'           [reduzir usando a regra 36 (expr)]
-    '/'           [reduzir usando a regra 36 (expr)]
-    $padrão      reduzir usando a regra 36 (expr)
-
-
-Estado 103
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   35     | expr OPERATOR_GE expr .
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 35 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 35 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 35 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 35 (expr)]
-    '+'           [reduzir usando a regra 35 (expr)]
-    '-'           [reduzir usando a regra 35 (expr)]
-    '*'           [reduzir usando a regra 35 (expr)]
-    '/'           [reduzir usando a regra 35 (expr)]
-    $padrão      reduzir usando a regra 35 (expr)
-
-
-Estado 104
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   34     | expr OPERATOR_EQ expr .
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 34 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 34 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 34 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 34 (expr)]
-    '+'           [reduzir usando a regra 34 (expr)]
-    '-'           [reduzir usando a regra 34 (expr)]
-    '*'           [reduzir usando a regra 34 (expr)]
-    '/'           [reduzir usando a regra 34 (expr)]
-    $padrão      reduzir usando a regra 34 (expr)
-
-
-Estado 105
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-   37     | expr OPERATOR_DIF expr .
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 37 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 37 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 37 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 37 (expr)]
-    '+'           [reduzir usando a regra 37 (expr)]
-    '-'           [reduzir usando a regra 37 (expr)]
-    '*'           [reduzir usando a regra 37 (expr)]
-    '/'           [reduzir usando a regra 37 (expr)]
-    $padrão      reduzir usando a regra 37 (expr)
-
-
-Estado 106
-
-   30 expr: expr . '+' expr
-   30     | expr '+' expr .
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 30 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 30 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 30 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 30 (expr)]
-    '+'           [reduzir usando a regra 30 (expr)]
-    '-'           [reduzir usando a regra 30 (expr)]
-    '*'           [reduzir usando a regra 30 (expr)]
-    '/'           [reduzir usando a regra 30 (expr)]
-    $padrão      reduzir usando a regra 30 (expr)
-
-
-Estado 107
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   31     | expr '-' expr .
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 31 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 31 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 31 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 31 (expr)]
-    '+'           [reduzir usando a regra 31 (expr)]
-    '-'           [reduzir usando a regra 31 (expr)]
-    '*'           [reduzir usando a regra 31 (expr)]
-    '/'           [reduzir usando a regra 31 (expr)]
-    $padrão      reduzir usando a regra 31 (expr)
-
-
-Estado 108
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   32     | expr '*' expr .
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 32 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 32 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 32 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 32 (expr)]
-    '+'           [reduzir usando a regra 32 (expr)]
-    '-'           [reduzir usando a regra 32 (expr)]
-    '*'           [reduzir usando a regra 32 (expr)]
-    '/'           [reduzir usando a regra 32 (expr)]
-    $padrão      reduzir usando a regra 32 (expr)
-
-
-Estado 109
-
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   33     | expr '/' expr .
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    OPERATOR_LE   deslocar, e ir ao estado 82
-    OPERATOR_GE   deslocar, e ir ao estado 83
-    OPERATOR_EQ   deslocar, e ir ao estado 84
-    OPERATOR_DIF  deslocar, e ir ao estado 85
-    '+'           deslocar, e ir ao estado 86
-    '-'           deslocar, e ir ao estado 87
-    '*'           deslocar, e ir ao estado 88
-    '/'           deslocar, e ir ao estado 89
-
-    OPERATOR_LE   [reduzir usando a regra 33 (expr)]
-    OPERATOR_GE   [reduzir usando a regra 33 (expr)]
-    OPERATOR_EQ   [reduzir usando a regra 33 (expr)]
-    OPERATOR_DIF  [reduzir usando a regra 33 (expr)]
-    '+'           [reduzir usando a regra 33 (expr)]
-    '-'           [reduzir usando a regra 33 (expr)]
-    '*'           [reduzir usando a regra 33 (expr)]
-    '/'           [reduzir usando a regra 33 (expr)]
-    $padrão      reduzir usando a regra 33 (expr)
-
-
-Estado 110
-
-   16 cmd_simples: KW_PRINT '(' print_values ')' . cmd_simples
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-
-    cmd_simples      ir ao estado 115
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 111
-
-   14 cmd_simples: TK_IDENTIFIER '=' expr cmd_simples .
-
-    $padrão  reduzir usando a regra 14 (cmd_simples)
-
-
-Estado 112
-
-   15 cmd_simples: TK_IDENTIFIER '[' expr ']' . '=' expr cmd_simples
-
-    '='  deslocar, e ir ao estado 116
-
-
-Estado 113
-
-   55 if_statement: KW_IF expr KW_THEN bloco_cmd KW_ELSE . bloco_cmd
-   56             | KW_IF expr KW_THEN bloco_cmd KW_ELSE . cmd_simples
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 99
-    '{'            deslocar, e ir ao estado 46
-
-    bloco_cmd        ir ao estado 117
-    cmd_simples      ir ao estado 118
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 114
-
-   57 if_statement: KW_IF expr KW_THEN cmd_simples KW_ELSE . bloco_cmd
-   58             | KW_IF expr KW_THEN cmd_simples KW_ELSE . cmd_simples
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 99
-    '{'            deslocar, e ir ao estado 46
-
-    bloco_cmd        ir ao estado 119
-    cmd_simples      ir ao estado 120
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 115
-
-   16 cmd_simples: KW_PRINT '(' print_values ')' cmd_simples .
-
-    $padrão  reduzir usando a regra 16 (cmd_simples)
-
-
-Estado 116
-
-   15 cmd_simples: TK_IDENTIFIER '[' expr ']' '=' . expr cmd_simples
-
-    KW_READ        deslocar, e ir ao estado 61
-    TK_IDENTIFIER  deslocar, e ir ao estado 62
-    LIT_INTEGER    deslocar, e ir ao estado 63
-    LIT_CHAR       deslocar, e ir ao estado 64
-    LIT_STRING     deslocar, e ir ao estado 65
-    '('            deslocar, e ir ao estado 66
-
-    expr  ir ao estado 121
-
-
-Estado 117
-
-   55 if_statement: KW_IF expr KW_THEN bloco_cmd KW_ELSE bloco_cmd .
-
-    $padrão  reduzir usando a regra 55 (if_statement)
-
-
-Estado 118
-
-   56 if_statement: KW_IF expr KW_THEN bloco_cmd KW_ELSE cmd_simples .
-
-    $padrão  reduzir usando a regra 56 (if_statement)
-
-
-Estado 119
-
-   57 if_statement: KW_IF expr KW_THEN cmd_simples KW_ELSE bloco_cmd .
-
-    $padrão  reduzir usando a regra 57 (if_statement)
-
-
-Estado 120
-
-   58 if_statement: KW_IF expr KW_THEN cmd_simples KW_ELSE cmd_simples .
-
-    $padrão  reduzir usando a regra 58 (if_statement)
-
-
-Estado 121
-
-   15 cmd_simples: TK_IDENTIFIER '[' expr ']' '=' expr . cmd_simples
-   30 expr: expr . '+' expr
-   31     | expr . '-' expr
-   32     | expr . '*' expr
-   33     | expr . '/' expr
-   34     | expr . OPERATOR_EQ expr
-   35     | expr . OPERATOR_GE expr
-   36     | expr . OPERATOR_LE expr
-   37     | expr . OPERATOR_DIF expr
-
-    KW_IF          deslocar, e ir ao estado 49
-    KW_WHILE       deslocar, e ir ao estado 50
-    KW_READ        deslocar, e ir ao estado 51
-    KW_PRINT       deslocar, e ir ao estado 52
-    KW_RETURN      deslocar, e ir ao estado 53
-    OPERATOR_LE    deslocar, e ir ao estado 82
-    OPERATOR_GE    deslocar, e ir ao estado 83
-    OPERATOR_EQ    deslocar, e ir ao estado 84
-    OPERATOR_DIF   deslocar, e ir ao estado 85
-    TK_IDENTIFIER  deslocar, e ir ao estado 54
-    ';'            deslocar, e ir ao estado 55
-    '+'            deslocar, e ir ao estado 86
-    '-'            deslocar, e ir ao estado 87
-    '*'            deslocar, e ir ao estado 88
-    '/'            deslocar, e ir ao estado 89
-
-    cmd_simples      ir ao estado 122
-    if_statement     ir ao estado 57
-    while_statement  ir ao estado 58
-    label            ir ao estado 59
-
-
-Estado 122
-
-   15 cmd_simples: TK_IDENTIFIER '[' expr ']' '=' expr cmd_simples .
-
-    $padrão  reduzir usando a regra 15 (cmd_simples)
+    $padrão  reduzir usando a regra 13 (cmd_block)
