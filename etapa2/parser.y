@@ -1,3 +1,6 @@
+// Caio Roberto Ramos da Silva - 00279459
+// Compiladores - 2021.2 - Marcelo Johann
+
 %token KW_CHAR 
 %token KW_INT
 %token KW_FLOAT
@@ -36,6 +39,8 @@ program: decl
 decl: dec decl
     |
     ;
+
+// This parser works (or should work) if only functions are present in the file, removing the global var declarations from the sample.txt provided, it works flawlessly
 
 dec: function
     // | global_var
@@ -129,15 +134,12 @@ return_values: expr
 
 
 simple_cmd: TK_IDENTIFIER '=' expr ';' simple_cmd
-    // | TK_IDENTIFIER '=' TK_IDENTIFIER '-' TK_IDENTIFIER ';' simple_cmd
-    // | KW_READ ';' simple_cmd
     | TK_IDENTIFIER '[' expr ']' '=' expr ';' simple_cmd
     | KW_PRINT print_values ';' simple_cmd
     | KW_RETURN return_values ';' simple_cmd
     | if_statement simple_cmd
     | while_statement ';' simple_cmd
     | label simple_cmd
-    // | KW_READ
     // | ';'
     | goto ';' simple_cmd
     |
