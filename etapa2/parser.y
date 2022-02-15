@@ -30,11 +30,11 @@
 
 %%
 
-programa: decl
+program: decl
     ;
 
-decl: global_var ';' decl
-    | function decl
+decl: global_var decl
+    | type TK_IDENTIFIER '(' params ')' cmd_block decl
     |
     ;
 
@@ -55,12 +55,9 @@ more_params: ',' type TK_IDENTIFIER more_params
     ;
 
 cmd_block: '{' simple_cmd ';' '}'
-    | ';'
     ;
 
-simple_cmd: label simple_cmd
-    | KW_READ simple_cmd
-    | ';'
+simple_cmd: KW_READ simple_cmd
     |
     ;
 
@@ -94,14 +91,10 @@ array_size: LIT_INTEGER
     |
     ;
 
-label: TK_IDENTIFIER ':'
-    ;
-
 
 %%
 
-int yyerror ()
-{
-  fprintf(stderr, "Syntax error at line %d %s.\n", getLineNumber(), yytext);
-  exit(3);
+void yyerror(const char *s) {
+    fprintf(stderr, "Syntax error at line %d.\n Error %s \n ", getLineNumber(), s);
+    exit(3);
 }
