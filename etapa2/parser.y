@@ -61,32 +61,34 @@ more_params: ',' type TK_IDENTIFIER more_params
 
 cmd_block: '{' simple_cmd '}'
     | ';'
+    |
     ;
 
 expr: KW_READ 
-    // | expr '+' expr
+    | expr '+' expr
     | expr '-' expr
-    // | expr '*' expr
-    // | expr '/' expr
-    // | expr '>' expr
-    // | expr '<' expr
-    // | expr OPERATOR_EQ expr
-    // | expr OPERATOR_GE expr
-    // | expr OPERATOR_LE expr
-    // | expr OPERATOR_DIF expr
-    // | '(' expr ')'
+    | expr '*' expr
+    | expr '/' expr
+    | expr '>' expr
+    | expr '<' expr
+    | expr OPERATOR_EQ expr
+    | expr OPERATOR_GE expr
+    | expr OPERATOR_LE expr
+    | expr OPERATOR_DIF expr
+    | '(' expr ')'
     | LIT_INTEGER
     | LIT_CHAR
     | LIT_STRING
     | TK_IDENTIFIER
+    // | function_call
     ;
 
 
-if_statement: KW_IF expr KW_THEN cmd_block
+if_statement: KW_IF expr KW_THEN cmd_block ';'
     | KW_IF expr KW_THEN simple_cmd
-    | KW_IF expr KW_THEN cmd_block KW_ELSE cmd_block
+    | KW_IF expr KW_THEN cmd_block KW_ELSE cmd_block ';'
     | KW_IF expr KW_THEN cmd_block KW_ELSE simple_cmd
-    | KW_IF expr KW_THEN simple_cmd KW_ELSE cmd_block
+    | KW_IF expr KW_THEN simple_cmd KW_ELSE cmd_block ';'
     | KW_IF expr KW_THEN simple_cmd KW_ELSE simple_cmd
     ;
 
@@ -113,20 +115,23 @@ return_values: expr
     ;
 
 
-simple_cmd: TK_IDENTIFIER '=' LIT_INTEGER ';' simple_cmd
-    | TK_IDENTIFIER '=' TK_IDENTIFIER '-' TK_IDENTIFIER ';' simple_cmd
-    | KW_READ ';' simple_cmd
+simple_cmd: TK_IDENTIFIER '=' expr ';' simple_cmd
+    // | TK_IDENTIFIER '=' TK_IDENTIFIER '-' TK_IDENTIFIER ';' simple_cmd
+    // | KW_READ ';' simple_cmd
     | TK_IDENTIFIER '[' expr ']' '=' expr ';' simple_cmd
     | KW_PRINT print_values ';' simple_cmd
     // | KW_RETURN return_values
-    // | if_statement
-    // | while_statement
-    // | label
+    | if_statement simple_cmd
+    | while_statement ';' simple_cmd
+    | label simple_cmd
     // | KW_READ
     // | ';'
+    | goto ';' simple_cmd
     |
     ;
 
+goto: KW_GOTO TK_IDENTIFIER
+    ;
 
 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
     | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
