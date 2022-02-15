@@ -33,12 +33,17 @@
 program: decl
     ;
 
-decl: global_var decl
-    | type TK_IDENTIFIER '(' params ')' cmd_block decl
+decl: dec ';' decl
+    |
+    ;
+
+dec: function
+    // | global_var
     |
     ;
 
 function: type TK_IDENTIFIER '(' params ')' cmd_block
+    | type TK_IDENTIFIER '('')' cmd_block
     ;
 
 type: KW_CHAR
@@ -54,10 +59,71 @@ more_params: ',' type TK_IDENTIFIER more_params
     |
     ;
 
-cmd_block: '{' simple_cmd ';' '}'
+cmd_block: '{' simple_cmd '}'
+    | ';'
     ;
 
-simple_cmd: KW_READ simple_cmd
+expr: KW_READ 
+    // | expr '+' expr
+    | expr '-' expr
+    // | expr '*' expr
+    // | expr '/' expr
+    // | expr '>' expr
+    // | expr '<' expr
+    // | expr OPERATOR_EQ expr
+    // | expr OPERATOR_GE expr
+    // | expr OPERATOR_LE expr
+    // | expr OPERATOR_DIF expr
+    // | '(' expr ')'
+    | LIT_INTEGER
+    | LIT_CHAR
+    | LIT_STRING
+    | TK_IDENTIFIER
+    ;
+
+
+if_statement: KW_IF expr KW_THEN cmd_block
+    | KW_IF expr KW_THEN simple_cmd
+    | KW_IF expr KW_THEN cmd_block KW_ELSE cmd_block
+    | KW_IF expr KW_THEN cmd_block KW_ELSE simple_cmd
+    | KW_IF expr KW_THEN simple_cmd KW_ELSE cmd_block
+    | KW_IF expr KW_THEN simple_cmd KW_ELSE simple_cmd
+    ;
+
+while_statement: KW_WHILE expr cmd_block
+    ;
+
+label: TK_IDENTIFIER ':'
+    ;
+
+print_values: LIT_STRING more_print_values
+    | TK_IDENTIFIER more_print_values
+    | TK_IDENTIFIER '[' array_index ']'
+    |
+    ;
+
+array_index: LIT_INTEGER
+    ;
+
+more_print_values: ',' print_values
+    |
+    ;
+
+return_values: expr
+    ;
+
+
+simple_cmd: TK_IDENTIFIER '=' LIT_INTEGER ';' simple_cmd
+    | TK_IDENTIFIER '=' TK_IDENTIFIER '-' TK_IDENTIFIER ';' simple_cmd
+    | KW_READ ';' simple_cmd
+    | TK_IDENTIFIER '[' expr ']' '=' expr ';' simple_cmd
+    | KW_PRINT print_values ';' simple_cmd
+    // | KW_RETURN return_values
+    // | if_statement
+    // | while_statement
+    // | label
+    // | KW_READ
+    // | ';'
     |
     ;
 
@@ -91,10 +157,9 @@ array_size: LIT_INTEGER
     |
     ;
 
-
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error at line %d.\n Error %s \n ", getLineNumber(), s);
+    fprintf(stderr, "Syntax error at line %d %s.\n", getLineNumber(), yytext);
     exit(3);
 }

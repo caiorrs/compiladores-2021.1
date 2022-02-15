@@ -1,6 +1,15 @@
 Não terminais inúteis na gramática
 
-    function
+    if_statement
+    while_statement
+    label
+    print_values
+    return_values
+    global_var
+    initialized_array
+    arr_elements
+    more_elements
+    arr_element
     array
     array_size
 
@@ -18,651 +27,552 @@ Terminais sem uso na gramática
     OPERATOR_GE
     OPERATOR_EQ
     OPERATOR_DIF
-    LIT_STRING
     TOKEN_ERROR
     '<'
     '>'
     '+'
-    '-'
     '*'
+    '/'
+    ':'
+    '['
+    ']'
 
 
 Regras inúteis na gramática
 
-   27 function: type TK_IDENTIFIER '(' params ')' cmd_block
+   27 if_statement: KW_IF expr KW_THEN cmd_block
+   28             | KW_IF expr KW_THEN simple_cmd
+   29             | KW_IF expr KW_THEN cmd_block KW_ELSE cmd_block
+   30             | KW_IF expr KW_THEN cmd_block KW_ELSE simple_cmd
+   31             | KW_IF expr KW_THEN simple_cmd KW_ELSE cmd_block
+   32             | KW_IF expr KW_THEN simple_cmd KW_ELSE simple_cmd
 
-   28 array: '[' array_size ']'
+   33 while_statement: KW_WHILE expr cmd_block
 
-   29 array_size: LIT_INTEGER
-   30           | %empty
+   34 label: TK_IDENTIFIER ':'
+
+   35 print_values: LIT_STRING
+   36             | expr
+
+   37 return_values: expr
+
+   38 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
+   39           | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+   40           | KW_INT TK_IDENTIFIER ':' arr_element
+   41           | KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+   42           | KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
+
+   43 initialized_array: ':' arr_elements
+   44                  | %empty
+
+   45 arr_elements: arr_element more_elements
+
+   46 more_elements: arr_elements
+   47              | %empty
+
+   48 arr_element: LIT_INTEGER
+   49            | LIT_CHAR
+
+   50 array: '[' array_size ']'
+
+   51 array_size: LIT_INTEGER
+   52           | %empty
 
 
-Estado 1 conflitos: 1 de deslocamento/redução
-Estado 2 conflitos: 1 de deslocamento/redução
-Estado 3 conflitos: 1 de deslocamento/redução
+Regras inúteis no analisador por causa de conflitos
+
+   12 params: %empty
+
+
+Estado 13 conflitos: 1 de deslocamento/redução
 
 
 Gramática
 
-    0 $accept: programa $end
+    0 $accept: program $end
 
-    1 programa: decl
+    1 program: decl
 
-    2 decl: type TK_IDENTIFIER '(' params ')' cmd_block decl
-    3     | global_var decl
-    4     | %empty
+    2 decl: dec ';' decl
+    3     | %empty
 
-    5 type: KW_CHAR
-    6     | KW_INT
-    7     | KW_FLOAT
+    4 dec: function
+    5    | %empty
 
-    8 params: type TK_IDENTIFIER more_params
-    9       | %empty
+    6 function: type TK_IDENTIFIER '(' params ')' cmd_block
+    7         | type TK_IDENTIFIER '(' ')' cmd_block
 
-   10 more_params: ',' type TK_IDENTIFIER more_params
-   11            | %empty
+    8 type: KW_CHAR
+    9     | KW_INT
+   10     | KW_FLOAT
 
-   12 cmd_block: '{' simple_cmd ';' '}'
+   11 params: type TK_IDENTIFIER more_params
+   12       | %empty
 
-   13 simple_cmd: KW_READ simple_cmd
-   14           | %empty
+   13 more_params: ',' type TK_IDENTIFIER more_params
+   14            | %empty
 
-   15 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
-   16           | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
-   17           | KW_INT TK_IDENTIFIER ':' arr_element
-   18           | KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
-   19           | KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
+   15 cmd_block: '{' simple_cmd '}'
+   16          | ';'
 
-   20 initialized_array: ':' arr_elements
-   21                  | %empty
+   17 expr: KW_READ
+   18     | expr '-' expr
+   19     | LIT_INTEGER
+   20     | LIT_CHAR
+   21     | LIT_STRING
+   22     | TK_IDENTIFIER
 
-   22 arr_elements: arr_element more_elements
-
-   23 more_elements: arr_elements
-   24              | %empty
-
-   25 arr_element: LIT_INTEGER
-   26            | LIT_CHAR
+   23 simple_cmd: TK_IDENTIFIER '=' expr ';'
+   24           | KW_READ
+   25           | ';'
+   26           | %empty
 
 
 Terminais, com as regras onde eles aparecem
 
     $end (0) 0
-    '(' (40) 2
-    ')' (41) 2
+    '(' (40) 6 7
+    ')' (41) 6 7
     '*' (42)
     '+' (43)
-    ',' (44) 10
-    '-' (45)
-    '/' (47) 19
-    ':' (58) 15 17 19 20
-    ';' (59) 12
+    ',' (44) 13
+    '-' (45) 18
+    '/' (47)
+    ':' (58)
+    ';' (59) 2 16 23 25
     '<' (60)
+    '=' (61) 23
     '>' (62)
-    '[' (91) 16 18
-    ']' (93) 16 18
-    '{' (123) 12
-    '}' (125) 12
+    '[' (91)
+    ']' (93)
+    '{' (123) 15
+    '}' (125) 15
     error (256)
-    KW_CHAR (258) 5 15 16
-    KW_INT (259) 6 17 18
-    KW_FLOAT (260) 7 19
+    KW_CHAR (258) 8
+    KW_INT (259) 9
+    KW_FLOAT (260) 10
     KW_IF (261)
     KW_THEN (262)
     KW_ELSE (263)
     KW_WHILE (264)
     KW_GOTO (265)
-    KW_READ (266) 13
+    KW_READ (266) 17 24
     KW_PRINT (267)
     KW_RETURN (268)
     OPERATOR_LE (269)
     OPERATOR_GE (270)
     OPERATOR_EQ (271)
     OPERATOR_DIF (272)
-    TK_IDENTIFIER (273) 2 8 10 15 16 17 18 19
-    LIT_INTEGER (274) 16 18 19 25
-    LIT_CHAR (275) 26
-    LIT_STRING (276)
+    TK_IDENTIFIER (273) 6 7 11 13 22 23
+    LIT_INTEGER (274) 19
+    LIT_CHAR (275) 20
+    LIT_STRING (276) 21
     TOKEN_ERROR (277)
 
 
 Não terminais com as regras onde eles aparecem
 
-    $accept (38)
+    $accept (39)
         à esquerda: 0
-    programa (39)
+    program (40)
         à esquerda: 1
         à direita: 0
-    decl (40)
-        à esquerda: 2 3 4
-        à direita: 1 2 3
-    type (41)
-        à esquerda: 5 6 7
-        à direita: 2 8 10
-    params (42)
-        à esquerda: 8 9
+    decl (41)
+        à esquerda: 2 3
+        à direita: 1 2
+    dec (42)
+        à esquerda: 4 5
         à direita: 2
-    more_params (43)
-        à esquerda: 10 11
-        à direita: 8 10
-    cmd_block (44)
-        à esquerda: 12
-        à direita: 2
-    simple_cmd (45)
+    function (43)
+        à esquerda: 6 7
+        à direita: 4
+    type (44)
+        à esquerda: 8 9 10
+        à direita: 6 7 11 13
+    params (45)
+        à esquerda: 11 12
+        à direita: 6
+    more_params (46)
         à esquerda: 13 14
-        à direita: 12 13
-    global_var (46)
-        à esquerda: 15 16 17 18 19
-        à direita: 3
-    initialized_array (47)
-        à esquerda: 20 21
-        à direita: 16 18
-    arr_elements (48)
-        à esquerda: 22
-        à direita: 20 23
-    more_elements (49)
-        à esquerda: 23 24
-        à direita: 22
-    arr_element (50)
-        à esquerda: 25 26
-        à direita: 15 17 22
+        à direita: 11 13
+    cmd_block (47)
+        à esquerda: 15 16
+        à direita: 6 7
+    expr (48)
+        à esquerda: 17 18 19 20 21 22
+        à direita: 18 23
+    simple_cmd (49)
+        à esquerda: 23 24 25 26
+        à direita: 15
 
 
 Estado 0
 
-    0 $accept: . programa $end
+    0 $accept: . program $end
 
     KW_CHAR   deslocar, e ir ao estado 1
     KW_INT    deslocar, e ir ao estado 2
     KW_FLOAT  deslocar, e ir ao estado 3
 
-    $padrão  reduzir usando a regra 4 (decl)
+    ';'       reduzir usando a regra 5 (dec)
+    $padrão  reduzir usando a regra 3 (decl)
 
-    programa    ir ao estado 4
-    decl        ir ao estado 5
-    type        ir ao estado 6
-    global_var  ir ao estado 7
+    program   ir ao estado 4
+    decl      ir ao estado 5
+    dec       ir ao estado 6
+    function  ir ao estado 7
+    type      ir ao estado 8
 
 
 Estado 1
 
-    5 type: KW_CHAR .
-   15 global_var: KW_CHAR . TK_IDENTIFIER ':' arr_element
-   16           | KW_CHAR . TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+    8 type: KW_CHAR .
 
-    TK_IDENTIFIER  deslocar, e ir ao estado 8
-
-    TK_IDENTIFIER  [reduzir usando a regra 5 (type)]
+    $padrão  reduzir usando a regra 8 (type)
 
 
 Estado 2
 
-    6 type: KW_INT .
-   17 global_var: KW_INT . TK_IDENTIFIER ':' arr_element
-   18           | KW_INT . TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
+    9 type: KW_INT .
 
-    TK_IDENTIFIER  deslocar, e ir ao estado 9
-
-    TK_IDENTIFIER  [reduzir usando a regra 6 (type)]
+    $padrão  reduzir usando a regra 9 (type)
 
 
 Estado 3
 
-    7 type: KW_FLOAT .
-   19 global_var: KW_FLOAT . TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
+   10 type: KW_FLOAT .
 
-    TK_IDENTIFIER  deslocar, e ir ao estado 10
-
-    TK_IDENTIFIER  [reduzir usando a regra 7 (type)]
+    $padrão  reduzir usando a regra 10 (type)
 
 
 Estado 4
 
-    0 $accept: programa . $end
+    0 $accept: program . $end
 
-    $end  deslocar, e ir ao estado 11
+    $end  deslocar, e ir ao estado 9
 
 
 Estado 5
 
-    1 programa: decl .
+    1 program: decl .
 
-    $padrão  reduzir usando a regra 1 (programa)
+    $padrão  reduzir usando a regra 1 (program)
 
 
 Estado 6
 
-    2 decl: type . TK_IDENTIFIER '(' params ')' cmd_block decl
+    2 decl: dec . ';' decl
 
-    TK_IDENTIFIER  deslocar, e ir ao estado 12
+    ';'  deslocar, e ir ao estado 10
 
 
 Estado 7
 
-    3 decl: global_var . decl
+    4 dec: function .
 
-    KW_CHAR   deslocar, e ir ao estado 1
-    KW_INT    deslocar, e ir ao estado 2
-    KW_FLOAT  deslocar, e ir ao estado 3
-
-    $padrão  reduzir usando a regra 4 (decl)
-
-    decl        ir ao estado 13
-    type        ir ao estado 6
-    global_var  ir ao estado 7
+    $padrão  reduzir usando a regra 4 (dec)
 
 
 Estado 8
 
-   15 global_var: KW_CHAR TK_IDENTIFIER . ':' arr_element
-   16           | KW_CHAR TK_IDENTIFIER . '[' LIT_INTEGER ']' initialized_array
+    6 function: type . TK_IDENTIFIER '(' params ')' cmd_block
+    7         | type . TK_IDENTIFIER '(' ')' cmd_block
 
-    ':'  deslocar, e ir ao estado 14
-    '['  deslocar, e ir ao estado 15
+    TK_IDENTIFIER  deslocar, e ir ao estado 11
 
 
 Estado 9
 
-   17 global_var: KW_INT TK_IDENTIFIER . ':' arr_element
-   18           | KW_INT TK_IDENTIFIER . '[' LIT_INTEGER ']' initialized_array
-
-    ':'  deslocar, e ir ao estado 16
-    '['  deslocar, e ir ao estado 17
-
-
-Estado 10
-
-   19 global_var: KW_FLOAT TK_IDENTIFIER . ':' LIT_INTEGER '/' LIT_INTEGER
-
-    ':'  deslocar, e ir ao estado 18
-
-
-Estado 11
-
-    0 $accept: programa $end .
+    0 $accept: program $end .
 
     $padrão  aceitar
 
 
-Estado 12
+Estado 10
 
-    2 decl: type TK_IDENTIFIER . '(' params ')' cmd_block decl
-
-    '('  deslocar, e ir ao estado 19
-
-
-Estado 13
-
-    3 decl: global_var decl .
-
-    $padrão  reduzir usando a regra 3 (decl)
-
-
-Estado 14
-
-   15 global_var: KW_CHAR TK_IDENTIFIER ':' . arr_element
-
-    LIT_INTEGER  deslocar, e ir ao estado 20
-    LIT_CHAR     deslocar, e ir ao estado 21
-
-    arr_element  ir ao estado 22
-
-
-Estado 15
-
-   16 global_var: KW_CHAR TK_IDENTIFIER '[' . LIT_INTEGER ']' initialized_array
-
-    LIT_INTEGER  deslocar, e ir ao estado 23
-
-
-Estado 16
-
-   17 global_var: KW_INT TK_IDENTIFIER ':' . arr_element
-
-    LIT_INTEGER  deslocar, e ir ao estado 20
-    LIT_CHAR     deslocar, e ir ao estado 21
-
-    arr_element  ir ao estado 24
-
-
-Estado 17
-
-   18 global_var: KW_INT TK_IDENTIFIER '[' . LIT_INTEGER ']' initialized_array
-
-    LIT_INTEGER  deslocar, e ir ao estado 25
-
-
-Estado 18
-
-   19 global_var: KW_FLOAT TK_IDENTIFIER ':' . LIT_INTEGER '/' LIT_INTEGER
-
-    LIT_INTEGER  deslocar, e ir ao estado 26
-
-
-Estado 19
-
-    2 decl: type TK_IDENTIFIER '(' . params ')' cmd_block decl
-
-    KW_CHAR   deslocar, e ir ao estado 27
-    KW_INT    deslocar, e ir ao estado 28
-    KW_FLOAT  deslocar, e ir ao estado 29
-
-    $padrão  reduzir usando a regra 9 (params)
-
-    type    ir ao estado 30
-    params  ir ao estado 31
-
-
-Estado 20
-
-   25 arr_element: LIT_INTEGER .
-
-    $padrão  reduzir usando a regra 25 (arr_element)
-
-
-Estado 21
-
-   26 arr_element: LIT_CHAR .
-
-    $padrão  reduzir usando a regra 26 (arr_element)
-
-
-Estado 22
-
-   15 global_var: KW_CHAR TK_IDENTIFIER ':' arr_element .
-
-    $padrão  reduzir usando a regra 15 (global_var)
-
-
-Estado 23
-
-   16 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER . ']' initialized_array
-
-    ']'  deslocar, e ir ao estado 32
-
-
-Estado 24
-
-   17 global_var: KW_INT TK_IDENTIFIER ':' arr_element .
-
-    $padrão  reduzir usando a regra 17 (global_var)
-
-
-Estado 25
-
-   18 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER . ']' initialized_array
-
-    ']'  deslocar, e ir ao estado 33
-
-
-Estado 26
-
-   19 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER . '/' LIT_INTEGER
-
-    '/'  deslocar, e ir ao estado 34
-
-
-Estado 27
-
-    5 type: KW_CHAR .
-
-    $padrão  reduzir usando a regra 5 (type)
-
-
-Estado 28
-
-    6 type: KW_INT .
-
-    $padrão  reduzir usando a regra 6 (type)
-
-
-Estado 29
-
-    7 type: KW_FLOAT .
-
-    $padrão  reduzir usando a regra 7 (type)
-
-
-Estado 30
-
-    8 params: type . TK_IDENTIFIER more_params
-
-    TK_IDENTIFIER  deslocar, e ir ao estado 35
-
-
-Estado 31
-
-    2 decl: type TK_IDENTIFIER '(' params . ')' cmd_block decl
-
-    ')'  deslocar, e ir ao estado 36
-
-
-Estado 32
-
-   16 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' . initialized_array
-
-    ':'  deslocar, e ir ao estado 37
-
-    $padrão  reduzir usando a regra 21 (initialized_array)
-
-    initialized_array  ir ao estado 38
-
-
-Estado 33
-
-   18 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' . initialized_array
-
-    ':'  deslocar, e ir ao estado 37
-
-    $padrão  reduzir usando a regra 21 (initialized_array)
-
-    initialized_array  ir ao estado 39
-
-
-Estado 34
-
-   19 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' . LIT_INTEGER
-
-    LIT_INTEGER  deslocar, e ir ao estado 40
-
-
-Estado 35
-
-    8 params: type TK_IDENTIFIER . more_params
-
-    ','  deslocar, e ir ao estado 41
-
-    $padrão  reduzir usando a regra 11 (more_params)
-
-    more_params  ir ao estado 42
-
-
-Estado 36
-
-    2 decl: type TK_IDENTIFIER '(' params ')' . cmd_block decl
-
-    '{'  deslocar, e ir ao estado 43
-
-    cmd_block  ir ao estado 44
-
-
-Estado 37
-
-   20 initialized_array: ':' . arr_elements
-
-    LIT_INTEGER  deslocar, e ir ao estado 20
-    LIT_CHAR     deslocar, e ir ao estado 21
-
-    arr_elements  ir ao estado 45
-    arr_element   ir ao estado 46
-
-
-Estado 38
-
-   16 global_var: KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array .
-
-    $padrão  reduzir usando a regra 16 (global_var)
-
-
-Estado 39
-
-   18 global_var: KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array .
-
-    $padrão  reduzir usando a regra 18 (global_var)
-
-
-Estado 40
-
-   19 global_var: KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER .
-
-    $padrão  reduzir usando a regra 19 (global_var)
-
-
-Estado 41
-
-   10 more_params: ',' . type TK_IDENTIFIER more_params
-
-    KW_CHAR   deslocar, e ir ao estado 27
-    KW_INT    deslocar, e ir ao estado 28
-    KW_FLOAT  deslocar, e ir ao estado 29
-
-    type  ir ao estado 47
-
-
-Estado 42
-
-    8 params: type TK_IDENTIFIER more_params .
-
-    $padrão  reduzir usando a regra 8 (params)
-
-
-Estado 43
-
-   12 cmd_block: '{' . simple_cmd ';' '}'
-
-    KW_READ  deslocar, e ir ao estado 48
-
-    $padrão  reduzir usando a regra 14 (simple_cmd)
-
-    simple_cmd  ir ao estado 49
-
-
-Estado 44
-
-    2 decl: type TK_IDENTIFIER '(' params ')' cmd_block . decl
+    2 decl: dec ';' . decl
 
     KW_CHAR   deslocar, e ir ao estado 1
     KW_INT    deslocar, e ir ao estado 2
     KW_FLOAT  deslocar, e ir ao estado 3
 
-    $padrão  reduzir usando a regra 4 (decl)
+    ';'       reduzir usando a regra 5 (dec)
+    $padrão  reduzir usando a regra 3 (decl)
 
-    decl        ir ao estado 50
-    type        ir ao estado 6
-    global_var  ir ao estado 7
-
-
-Estado 45
-
-   20 initialized_array: ':' arr_elements .
-
-    $padrão  reduzir usando a regra 20 (initialized_array)
+    decl      ir ao estado 12
+    dec       ir ao estado 6
+    function  ir ao estado 7
+    type      ir ao estado 8
 
 
-Estado 46
+Estado 11
 
-   22 arr_elements: arr_element . more_elements
+    6 function: type TK_IDENTIFIER . '(' params ')' cmd_block
+    7         | type TK_IDENTIFIER . '(' ')' cmd_block
 
-    LIT_INTEGER  deslocar, e ir ao estado 20
-    LIT_CHAR     deslocar, e ir ao estado 21
-
-    $padrão  reduzir usando a regra 24 (more_elements)
-
-    arr_elements   ir ao estado 51
-    more_elements  ir ao estado 52
-    arr_element    ir ao estado 46
+    '('  deslocar, e ir ao estado 13
 
 
-Estado 47
+Estado 12
 
-   10 more_params: ',' type . TK_IDENTIFIER more_params
-
-    TK_IDENTIFIER  deslocar, e ir ao estado 53
-
-
-Estado 48
-
-   13 simple_cmd: KW_READ . simple_cmd
-
-    KW_READ  deslocar, e ir ao estado 48
-
-    $padrão  reduzir usando a regra 14 (simple_cmd)
-
-    simple_cmd  ir ao estado 54
-
-
-Estado 49
-
-   12 cmd_block: '{' simple_cmd . ';' '}'
-
-    ';'  deslocar, e ir ao estado 55
-
-
-Estado 50
-
-    2 decl: type TK_IDENTIFIER '(' params ')' cmd_block decl .
+    2 decl: dec ';' decl .
 
     $padrão  reduzir usando a regra 2 (decl)
 
 
-Estado 51
+Estado 13
 
-   23 more_elements: arr_elements .
+    6 function: type TK_IDENTIFIER '(' . params ')' cmd_block
+    7         | type TK_IDENTIFIER '(' . ')' cmd_block
 
-    $padrão  reduzir usando a regra 23 (more_elements)
+    KW_CHAR   deslocar, e ir ao estado 1
+    KW_INT    deslocar, e ir ao estado 2
+    KW_FLOAT  deslocar, e ir ao estado 3
+    ')'       deslocar, e ir ao estado 14
 
+    ')'  [reduzir usando a regra 12 (params)]
 
-Estado 52
-
-   22 arr_elements: arr_element more_elements .
-
-    $padrão  reduzir usando a regra 22 (arr_elements)
-
-
-Estado 53
-
-   10 more_params: ',' type TK_IDENTIFIER . more_params
-
-    ','  deslocar, e ir ao estado 41
-
-    $padrão  reduzir usando a regra 11 (more_params)
-
-    more_params  ir ao estado 56
+    type    ir ao estado 15
+    params  ir ao estado 16
 
 
-Estado 54
+Estado 14
 
-   13 simple_cmd: KW_READ simple_cmd .
+    7 function: type TK_IDENTIFIER '(' ')' . cmd_block
 
-    $padrão  reduzir usando a regra 13 (simple_cmd)
+    ';'  deslocar, e ir ao estado 17
+    '{'  deslocar, e ir ao estado 18
 
-
-Estado 55
-
-   12 cmd_block: '{' simple_cmd ';' . '}'
-
-    '}'  deslocar, e ir ao estado 57
+    cmd_block  ir ao estado 19
 
 
-Estado 56
+Estado 15
 
-   10 more_params: ',' type TK_IDENTIFIER more_params .
+   11 params: type . TK_IDENTIFIER more_params
 
-    $padrão  reduzir usando a regra 10 (more_params)
+    TK_IDENTIFIER  deslocar, e ir ao estado 20
 
 
-Estado 57
+Estado 16
 
-   12 cmd_block: '{' simple_cmd ';' '}' .
+    6 function: type TK_IDENTIFIER '(' params . ')' cmd_block
 
-    $padrão  reduzir usando a regra 12 (cmd_block)
+    ')'  deslocar, e ir ao estado 21
+
+
+Estado 17
+
+   16 cmd_block: ';' .
+
+    $padrão  reduzir usando a regra 16 (cmd_block)
+
+
+Estado 18
+
+   15 cmd_block: '{' . simple_cmd '}'
+
+    KW_READ        deslocar, e ir ao estado 22
+    TK_IDENTIFIER  deslocar, e ir ao estado 23
+    ';'            deslocar, e ir ao estado 24
+
+    $padrão  reduzir usando a regra 26 (simple_cmd)
+
+    simple_cmd  ir ao estado 25
+
+
+Estado 19
+
+    7 function: type TK_IDENTIFIER '(' ')' cmd_block .
+
+    $padrão  reduzir usando a regra 7 (function)
+
+
+Estado 20
+
+   11 params: type TK_IDENTIFIER . more_params
+
+    ','  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 14 (more_params)
+
+    more_params  ir ao estado 27
+
+
+Estado 21
+
+    6 function: type TK_IDENTIFIER '(' params ')' . cmd_block
+
+    ';'  deslocar, e ir ao estado 17
+    '{'  deslocar, e ir ao estado 18
+
+    cmd_block  ir ao estado 28
+
+
+Estado 22
+
+   24 simple_cmd: KW_READ .
+
+    $padrão  reduzir usando a regra 24 (simple_cmd)
+
+
+Estado 23
+
+   23 simple_cmd: TK_IDENTIFIER . '=' expr ';'
+
+    '='  deslocar, e ir ao estado 29
+
+
+Estado 24
+
+   25 simple_cmd: ';' .
+
+    $padrão  reduzir usando a regra 25 (simple_cmd)
+
+
+Estado 25
+
+   15 cmd_block: '{' simple_cmd . '}'
+
+    '}'  deslocar, e ir ao estado 30
+
+
+Estado 26
+
+   13 more_params: ',' . type TK_IDENTIFIER more_params
+
+    KW_CHAR   deslocar, e ir ao estado 1
+    KW_INT    deslocar, e ir ao estado 2
+    KW_FLOAT  deslocar, e ir ao estado 3
+
+    type  ir ao estado 31
+
+
+Estado 27
+
+   11 params: type TK_IDENTIFIER more_params .
+
+    $padrão  reduzir usando a regra 11 (params)
+
+
+Estado 28
+
+    6 function: type TK_IDENTIFIER '(' params ')' cmd_block .
+
+    $padrão  reduzir usando a regra 6 (function)
+
+
+Estado 29
+
+   23 simple_cmd: TK_IDENTIFIER '=' . expr ';'
+
+    KW_READ        deslocar, e ir ao estado 32
+    TK_IDENTIFIER  deslocar, e ir ao estado 33
+    LIT_INTEGER    deslocar, e ir ao estado 34
+    LIT_CHAR       deslocar, e ir ao estado 35
+    LIT_STRING     deslocar, e ir ao estado 36
+
+    expr  ir ao estado 37
+
+
+Estado 30
+
+   15 cmd_block: '{' simple_cmd '}' .
+
+    $padrão  reduzir usando a regra 15 (cmd_block)
+
+
+Estado 31
+
+   13 more_params: ',' type . TK_IDENTIFIER more_params
+
+    TK_IDENTIFIER  deslocar, e ir ao estado 38
+
+
+Estado 32
+
+   17 expr: KW_READ .
+
+    $padrão  reduzir usando a regra 17 (expr)
+
+
+Estado 33
+
+   22 expr: TK_IDENTIFIER .
+
+    $padrão  reduzir usando a regra 22 (expr)
+
+
+Estado 34
+
+   19 expr: LIT_INTEGER .
+
+    $padrão  reduzir usando a regra 19 (expr)
+
+
+Estado 35
+
+   20 expr: LIT_CHAR .
+
+    $padrão  reduzir usando a regra 20 (expr)
+
+
+Estado 36
+
+   21 expr: LIT_STRING .
+
+    $padrão  reduzir usando a regra 21 (expr)
+
+
+Estado 37
+
+   18 expr: expr . '-' expr
+   23 simple_cmd: TK_IDENTIFIER '=' expr . ';'
+
+    '-'  deslocar, e ir ao estado 39
+    ';'  deslocar, e ir ao estado 40
+
+
+Estado 38
+
+   13 more_params: ',' type TK_IDENTIFIER . more_params
+
+    ','  deslocar, e ir ao estado 26
+
+    $padrão  reduzir usando a regra 14 (more_params)
+
+    more_params  ir ao estado 41
+
+
+Estado 39
+
+   18 expr: expr '-' . expr
+
+    KW_READ        deslocar, e ir ao estado 32
+    TK_IDENTIFIER  deslocar, e ir ao estado 33
+    LIT_INTEGER    deslocar, e ir ao estado 34
+    LIT_CHAR       deslocar, e ir ao estado 35
+    LIT_STRING     deslocar, e ir ao estado 36
+
+    expr  ir ao estado 42
+
+
+Estado 40
+
+   23 simple_cmd: TK_IDENTIFIER '=' expr ';' .
+
+    $padrão  reduzir usando a regra 23 (simple_cmd)
+
+
+Estado 41
+
+   13 more_params: ',' type TK_IDENTIFIER more_params .
+
+    $padrão  reduzir usando a regra 13 (more_params)
+
+
+Estado 42
+
+   18 expr: expr . '-' expr
+   18     | expr '-' expr .
+
+    $padrão  reduzir usando a regra 18 (expr)
