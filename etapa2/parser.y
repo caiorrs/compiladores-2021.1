@@ -33,7 +33,7 @@
 program: decl
     ;
 
-decl: dec ';' decl
+decl: dec decl
     |
     ;
 
@@ -133,7 +133,7 @@ simple_cmd: TK_IDENTIFIER '=' expr ';' simple_cmd
     // | KW_READ ';' simple_cmd
     | TK_IDENTIFIER '[' expr ']' '=' expr ';' simple_cmd
     | KW_PRINT print_values ';' simple_cmd
-    // | KW_RETURN return_values
+    | KW_RETURN return_values ';' simple_cmd
     | if_statement simple_cmd
     | while_statement ';' simple_cmd
     | label simple_cmd

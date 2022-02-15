@@ -35,3 +35,11 @@ int main ()
   if a > 0 then
     goto label-x;
   }
+
+int incn (int x , int n )
+  {
+  return x+n;
+  }
+
+\\ end of file
+  
