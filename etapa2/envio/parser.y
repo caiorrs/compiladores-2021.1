@@ -31,6 +31,10 @@
 %left '+' '-'
 %left '*' '/'
 
+%{
+    void yyerror(char *s);
+%}
+
 %%
 
 program: decl
@@ -179,7 +183,7 @@ array_size: LIT_INTEGER
 
 %%
 
-void yyerror(const char *s) {
+void yyerror(char *s) {
     fprintf(stderr, "Syntax error at line %d %s.\n", getLineNumber(), yytext);
     exit(3);
 }

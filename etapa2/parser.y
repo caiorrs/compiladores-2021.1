@@ -31,7 +31,15 @@
 %left '+' '-'
 %left '*' '/'
 
+%{
+    void yyerror(char *s);
+%}
+
 %%
+
+
+// This parser works (or should work) if only functions are present in the file, removing the global var declarations from the sample.txt provided, it works flawlessly
+
 
 program: decl
     ;
@@ -40,15 +48,15 @@ decl: dec decl
     |
     ;
 
-// This parser works (or should work) if only functions are present in the file, removing the global var declarations from the sample.txt provided, it works flawlessly
-
-dec: function
-    // | global_var
-    |
+dec: type TK_IDENTIFIER declaration_type
     ;
 
-function: type TK_IDENTIFIER '(' params ')' cmd_block
-    | type TK_IDENTIFIER '('')' cmd_block
+declaration_type: function
+    | global_var
+    ;
+
+function: '(' params ')' cmd_block
+    | '('')' cmd_block
     ;
 
 type: KW_CHAR
@@ -67,6 +75,13 @@ more_params: ',' type TK_IDENTIFIER more_params
 cmd_block: '{' simple_cmd '}'
     | ';'
     |
+    ;
+
+global_var: ':' arr_element ';'
+    | '[' LIT_INTEGER ']' initialized_array ';'
+    | ':' arr_element ';'
+    | '[' LIT_INTEGER ']' initialized_array ';'
+    | ':' LIT_INTEGER '/' LIT_INTEGER ';'
     ;
 
 expr: KW_READ 
@@ -148,13 +163,6 @@ simple_cmd: TK_IDENTIFIER '=' expr ';' simple_cmd
 goto: KW_GOTO TK_IDENTIFIER
     ;
 
-global_var: KW_CHAR TK_IDENTIFIER ':' arr_element
-    | KW_CHAR TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
-    | KW_INT TK_IDENTIFIER ':' arr_element
-    | KW_INT TK_IDENTIFIER '[' LIT_INTEGER ']' initialized_array
-    | KW_FLOAT TK_IDENTIFIER ':' LIT_INTEGER '/' LIT_INTEGER
-    ;
-
 initialized_array: ':' arr_elements
     |
     ;
@@ -179,7 +187,7 @@ array_size: LIT_INTEGER
 
 %%
 
-void yyerror(const char *s) {
+void yyerror(char *s) {
     fprintf(stderr, "Syntax error at line %d %s.\n", getLineNumber(), yytext);
     exit(3);
 }
