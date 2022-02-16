@@ -65,6 +65,7 @@ type: KW_CHAR
     ;
 
 params: type TK_IDENTIFIER more_params
+    |
     ;
 
 more_params: ',' type TK_IDENTIFIER more_params
@@ -77,6 +78,8 @@ cmd_block: '{' simple_cmd '}'
     ;
 
 global_var: ':' arr_element ';'
+    | '[' LIT_INTEGER ']' initialized_array ';'
+    | ':' arr_element ';'
     | '[' LIT_INTEGER ']' initialized_array ';'
     | ':' LIT_INTEGER '/' LIT_INTEGER ';'
     ;
@@ -173,6 +176,13 @@ more_elements: arr_elements
 
 arr_element: LIT_INTEGER
     | LIT_CHAR
+    ;
+
+array: '[' array_size ']'
+    ;
+
+array_size: LIT_INTEGER
+    |
     ;
 
 %%
