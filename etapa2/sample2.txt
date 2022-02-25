@@ -1,3 +1,27 @@
-int main () {
-  read;;
-}
+int main ()
+  {
+  if a==15 then
+    {
+    label-x:
+    a = a - 1;
+    print "A era=15\n";
+    };;
+    
+  if (i==100) then
+    {
+    print "Nao tem como isso...\n";
+    }
+  else
+    print "OK!\n";
+  if a > 0 then
+    goto label-x;
+  }
+
+int incn (int x , int n )
+  {
+  return x+n;
+  }
+
+  
+
+
