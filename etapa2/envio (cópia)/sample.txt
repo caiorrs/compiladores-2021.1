@@ -22,7 +22,6 @@ int main ()
   print v[5];
   print a;
   i = 2;
-  v[0] = 3;
 
   print "Digite um numero: \n";
   a = read;
