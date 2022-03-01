@@ -7,7 +7,6 @@
 
 %union
 {
-  int value;
   HASH_NODE *symbol;
 }
 
@@ -29,15 +28,15 @@
 %token OPERATOR_EQ 
 %token OPERATOR_DIF
 
-%token TK_IDENTIFIER 
+%token<symbol> TK_IDENTIFIER 
 
-%token<value> LIT_INTEGER 
+%token<symbol> LIT_INTEGER 
 %token LIT_CHAR
 %token LIT_STRING
 
 %token TOKEN_ERROR
 
-%type<value> expr
+%type<symbol> expr
 
 %left '<' '>' OPERATOR_DIF OPERATOR_EQ OPERATOR_GE OPERATOR_LE
 %left '+' '-'
@@ -107,23 +106,23 @@ float: LIT_INTEGER '/' LIT_INTEGER
 
 // an expression cand be one of the following
 expr: KW_READ         {$$ = 0;}  // read command
-    | expr '+' expr  {$$ = $1 + $3;}   // sum
-    | expr '-' expr  {$$ = $1 - $3;}   // subtraction
-    | expr '*' expr  {$$ = $1 * $3;}   // multiplication
-    | expr '/' expr  {$$ = $1 / $3;}   // division
-    | expr '>' expr  {$$ = $1 > $3;}   // greater than
-    | expr '<' expr  {$$ = $1 < $3;} // less than
-    | expr OPERATOR_EQ expr   {$$ = $1 == $3;} // equals
-    | expr OPERATOR_GE expr   {$$ = $1 >= $3;}  // greater or equals
-    | expr OPERATOR_LE expr   {$$ = $1 <= $3;}   // less or equals
-    | expr OPERATOR_DIF expr  {$$ = $1 != $3;}   // different
-    | '(' expr ')'  {$$ = $2;} // an expression can be between parenthesis
-    | LIT_INTEGER        {fprintf(stderr, "Recebi: %d\n", $1);} // int
-    | LIT_CHAR      {$$ = 0;} // char
-    | LIT_STRING    {$$ = 0;} // string
-    | TK_IDENTIFIER {$$ = 0;} // identifier
-    | function_call {$$ = 0;} // a function call
-    | '[' expr ']'  {$$ = $2;} // and index for an array
+    | expr '+' expr           // sum
+    | expr '-' expr           // subtraction
+    | expr '*' expr           // multiplication
+    | expr '/' expr           // division
+    | expr '>' expr           // greater than
+    | expr '<' expr           // less than
+    | expr OPERATOR_EQ expr   // equals
+    | expr OPERATOR_GE expr   // greater or equals
+    | expr OPERATOR_LE expr   // less or equals
+    | expr OPERATOR_DIF expr  // different
+    | '(' expr ')'   {$$ = 0;}         // an expression can be between parenthesis
+    | LIT_INTEGER        {fprintf(stderr, "Recebi: %s\n", $1->text);} // int
+    | LIT_CHAR       {$$ = 0;}         // char
+    | LIT_STRING     {$$ = 0;}         // string
+    | TK_IDENTIFIER  {fprintf(stderr, "Recebi: %s\n", $1->text);}         // identifier
+    | function_call  {$$ = 0;}         // a function call
+    | '[' expr ']'   {$$ = 0;}         // and index for an array
     ;
 
 function_call: TK_IDENTIFIER '(' call_parameters ')'
@@ -178,7 +177,7 @@ cmd_list: cmd ';' cmd_list
     |
     ;
 
-cmd: TK_IDENTIFIER '=' expr     {fprintf(stderr, "Expr vale %d\n", $3);}
+cmd: TK_IDENTIFIER '=' expr
     | TK_IDENTIFIER '[' expr ']' '=' expr
     | KW_PRINT print_values
     | KW_RETURN return_values

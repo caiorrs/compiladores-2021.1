@@ -37,14 +37,20 @@ int getLineNumber(void) {
 "!="                  {return OPERATOR_DIF;}
 [ \t]
 "\n"                  {++lineNumber;}
-[0-9]+                {hashInsert(yytext, LIT_INTEGER); 
-                        yylval.value = atoi(yytext);
-                        return LIT_INTEGER;}
+[0-9]+                {
+                        
+                        yylval.symbol = hashInsert(yytext, LIT_INTEGER); 
+                        return LIT_INTEGER;
+                      }
 \'.\'                 {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 \"(\\.|[^\"])*\"      {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 \\\\.*                {printf("COMMENT\n");}
 \\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}
-[a-z_\-]+             {hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
+[a-z_\-]+             {
+                        
+                        yylval.symbol = hashInsert(yytext, TK_IDENTIFIER);
+                        return TK_IDENTIFIER;
+                      }
 .                     {printf("Invalid token: %c ", yytext[0]); return TOKEN_ERROR;}
 
 <MULTILINE_COMMENT>\n {++lineNumber;}

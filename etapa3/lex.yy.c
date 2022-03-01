@@ -883,63 +883,69 @@ YY_RULE_SETUP
 case 19:
 YY_RULE_SETUP
 #line 40 "scanner.l"
-{hashInsert(yytext, LIT_INTEGER); 
-                        yylval.value = atoi(yytext);
-                        return LIT_INTEGER;}
+{
+                        
+                        yylval.symbol = hashInsert(yytext, LIT_INTEGER); 
+                        return LIT_INTEGER;
+                      }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 43 "scanner.l"
+#line 45 "scanner.l"
 {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 44 "scanner.l"
+#line 46 "scanner.l"
 {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 45 "scanner.l"
+#line 47 "scanner.l"
 {printf("COMMENT\n");}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 46 "scanner.l"
+#line 48 "scanner.l"
 {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 47 "scanner.l"
-{hashInsert(yytext, TK_IDENTIFIER); return TK_IDENTIFIER;}
+#line 49 "scanner.l"
+{
+                        
+                        yylval.symbol = hashInsert(yytext, TK_IDENTIFIER);
+                        return TK_IDENTIFIER;
+                      }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 48 "scanner.l"
+#line 54 "scanner.l"
 {printf("Invalid token: %c ", yytext[0]); return TOKEN_ERROR;}
 	YY_BREAK
 case 26:
 /* rule 26 can match eol */
 YY_RULE_SETUP
-#line 50 "scanner.l"
+#line 56 "scanner.l"
 {++lineNumber;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 51 "scanner.l"
+#line 57 "scanner.l"
 {BEGIN(INITIAL);}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 52 "scanner.l"
+#line 58 "scanner.l"
 
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 54 "scanner.l"
+#line 60 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 943 "lex.yy.c"
+#line 949 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(MULTILINE_COMMENT):
 	yyterminate();
@@ -1945,7 +1951,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 54 "scanner.l"
+#line 60 "scanner.l"
 
 
 #include "y.tab.c"

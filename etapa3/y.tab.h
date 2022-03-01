@@ -99,10 +99,9 @@ union YYSTYPE
 {
 #line 9 "parser.y"
 
-  int value;
   HASH_NODE *symbol;
 
-#line 106 "y.tab.h"
+#line 105 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
