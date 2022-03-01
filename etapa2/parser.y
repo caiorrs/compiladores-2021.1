@@ -120,7 +120,6 @@ function_call: TK_IDENTIFIER '(' call_parameters ')'
 call_parameters: TK_IDENTIFIER more_call_params
     | LIT_CHAR more_call_params
     | LIT_INTEGER more_call_params
-    |
     ;
 
 more_call_params: ',' call_parameters
@@ -130,12 +129,18 @@ more_call_params: ',' call_parameters
 if_statement: KW_IF expr KW_THEN if_cases
     ;
 
-if_cases: block
-    | block KW_ELSE block
-    | block KW_ELSE cmd
-    | cmd
-    | cmd KW_ELSE block
-    | cmd KW_ELSE cmd
+if_cases: block then_expr block has_else
+    | cmd then_expr block has_else
+    ;
+
+then_expr: KW_THEN cmd
+    | KW_THEN block
+    | KW_THEN block ';'
+    ;
+
+has_else: KW_ELSE block
+    | KW_ELSE cmd
+    |
     ;
 
 while_statement: KW_WHILE expr block
@@ -173,7 +178,7 @@ cmd: TK_IDENTIFIER '=' expr
     | if_statement
     | while_statement
     | goto
-    | block
+    // | block
     | expr
     ;
 
