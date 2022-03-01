@@ -10,6 +10,7 @@ int main ()
   print v[5];
   print a;
   i = 2;
+  x = 99 + b - (x) + 1111;
 
   print "Digite um numero: \n";
   a = read;

@@ -3,11 +3,17 @@
 
 %{
   #include "hash.h"
+  #include "ast.h"
+
+  int getLineNumber();
+  int yylex();      // FIND A BETTER SOLUTION
+  char *yytext;
 %}
 
 %union
 {
   HASH_NODE *symbol;
+  AST *ast;
 }
 
 %token KW_CHAR 
@@ -36,7 +42,7 @@
 
 %token TOKEN_ERROR
 
-%type<symbol> expr
+%type<ast> expr
 
 %left '<' '>' OPERATOR_DIF OPERATOR_EQ OPERATOR_GE OPERATOR_LE
 %left '+' '-'
@@ -54,8 +60,8 @@ program: decl
     ;
 
 // a list of declarations is 1 declaration followed by a list of declarations or empty (for program ending or empty program)
-decl: dec decl
-    |
+decl: dec decl // TODO: {$$ = astCreate(AST_LCMD, 0, $1,$2,0,0);}
+    |  {$$ = 0;}
     ;
 
 // a declaration is a TYPE followed by an IDENTIFIER and then a declaration_type
@@ -106,8 +112,8 @@ float: LIT_INTEGER '/' LIT_INTEGER
 
 // an expression cand be one of the following
 expr: KW_READ         {$$ = 0;}  // read command
-    | expr '+' expr           // sum
-    | expr '-' expr           // subtraction
+    | expr '+' expr           {$$ = astCreate(AST_ADD, 0, $1,$3,0,0);} // sum
+    | expr '-' expr           {$$ = astCreate(AST_SUB, 0, $1,$3,0,0);} // subtraction
     | expr '*' expr           // multiplication
     | expr '/' expr           // division
     | expr '>' expr           // greater than
@@ -116,13 +122,13 @@ expr: KW_READ         {$$ = 0;}  // read command
     | expr OPERATOR_GE expr   // greater or equals
     | expr OPERATOR_LE expr   // less or equals
     | expr OPERATOR_DIF expr  // different
-    | '(' expr ')'   {$$ = 0;}         // an expression can be between parenthesis
-    | LIT_INTEGER        {fprintf(stderr, "Recebi: %s\n", $1->text);} // int
+    | '(' expr ')'   {$$ = $2;}         // an expression can be between parenthesis
+    | LIT_INTEGER        {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);} // int
     | LIT_CHAR       {$$ = 0;}         // char
     | LIT_STRING     {$$ = 0;}         // string
-    | TK_IDENTIFIER  {fprintf(stderr, "Recebi: %s\n", $1->text);}         // identifier
+    | TK_IDENTIFIER  {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}         // identifier
     | function_call  {$$ = 0;}         // a function call
-    | '[' expr ']'   {$$ = 0;}         // and index for an array
+    | '[' expr ']'   {$$ = $2;}         // and index for an array
     ;
 
 function_call: TK_IDENTIFIER '(' call_parameters ')'
@@ -177,7 +183,7 @@ cmd_list: cmd ';' cmd_list
     |
     ;
 
-cmd: TK_IDENTIFIER '=' expr
+cmd: TK_IDENTIFIER '=' expr  {astPrint($3, 0);}
     | TK_IDENTIFIER '[' expr ']' '=' expr
     | KW_PRINT print_values
     | KW_RETURN return_values

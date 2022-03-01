@@ -5,6 +5,7 @@
   String regex from - https://stackoverflow.com/a/1016356
 */
 #include "hash.h"
+#include "ast.h"
 #include "y.tab.h"
 
 int running = 1;
@@ -58,10 +59,6 @@ int getLineNumber(void) {
 <MULTILINE_COMMENT>.
 
 %%
-
-#include "y.tab.c"
-#include "hash.c"
-#include "main.c"
 
 int isRunning(void) {
   return running;
