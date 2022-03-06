@@ -20,9 +20,9 @@
   AST *ast;
 }
 
-%token<ast> KW_CHAR 
-%token<ast> KW_INT
-%token<ast> KW_FLOAT
+%token KW_CHAR
+%token KW_INT
+%token KW_FLOAT
 
 %token KW_IF 
 %token KW_THEN 
@@ -48,11 +48,8 @@
 %type<ast> program
 %type<ast> decl
 %type<ast> dec
-%type<ast> declaration_type
-%type<ast> function
 %type<ast> params
 %type<ast> block
-%type<ast> global_var
 
 %type<ast> expr
 %type<ast> cmd
@@ -65,6 +62,9 @@
 %type<ast> arr_element
 %type<ast> more_elements
 %type<ast> more_params
+%type<ast> type
+%type<ast> float
+%type<ast> function_call
 
 %left '<' '>' OPERATOR_DIF OPERATOR_EQ OPERATOR_GE OPERATOR_LE
 %left '+' '-'
@@ -82,12 +82,16 @@ program: decl {root = $$;}
     ;
 
 // a list of declarations is 1 declaration followed by a list of declarations or empty (for program ending or empty program)
-decl: dec decl {$$ = astCreate(AST_DECLIST, 0, $1,$2,0,0); astPrint($1, 0);}
+decl: dec decl {$$ = astCreate(AST_DECLIST, 0, $1,$2,0,0);}
     |          {$$ = 0;}
     ;
 
 // a declaration is a TYPE followed by an IDENTIFIER and then a declaration_type
-dec: type TK_IDENTIFIER declaration_type {astCreate(AST_DEC, 0, $2, $3, 0, 0);}
+dec: type TK_IDENTIFIER '(' params ')' block       {$$ = 0;} //{astCreate(AST_FUNC_DEC, $2, $1, $4, $6, 0);}
+    | type TK_IDENTIFIER ':' arr_element ';'       {astCreate(AST_GLOBAL_VAR_DEC, $2, $1, $4, 0, 0);}
+    | type TK_IDENTIFIER ':' float ';'             {$$ = 0;} //{astCreate(AST_GLOBAL_VAR_FLOAT_DEC, $2, $1, $4, 0, 0);}
+    | type TK_IDENTIFIER '[' LIT_INTEGER ']' ';'   {$$ = 0;} //{astCreate(AST_GLOBAL_VAR_ARR_DEC, $2, $1, astCreate(AST_SYMBOL, $4, 0,0,0,0), 0, 0);}
+    | type TK_IDENTIFIER '[' LIT_INTEGER ']' ':' array_initialization ';' {$$ = 0;} //{astCreate(AST_GLOBAL_VAR_INITIALIZED_ARR_DEC, $2, $1, astCreate(AST_SYMBOL, $4, 0,0,0,0), $7, 0);}
     ;
 
 // a type is one of CHAR, INT, FLOAT
@@ -96,18 +100,9 @@ type: KW_CHAR   {astCreate(AST_TYPE_CHAR, 0, 0, 0, 0, 0);}
     | KW_FLOAT  {astCreate(AST_TYPE_FLOAT, 0, 0, 0, 0, 0);}
     ;
 
-// a declaration type is or a function or a global variable
-declaration_type: function {$$ = 0;}
-    | global_var ';' {$$ = 0;}
-    ;
-
-// a function or has parameters or does not, between parenthesis, followed by a block
-function: '(' params ')' block {$$ = 0;}
-    | '('')' block {$$ = 0;}
-    ;
-
 // parameters are defined as a TYPE, followed by an IDENTIFIER and then followed by more parameters
 params: type TK_IDENTIFIER more_params {$$ = 0;}
+    | {$$ = 0;}
     ;
 
 // more parameters is defined as a comma (to separate params), followed by an IDENTIFIER and then more parameters or empty (no more parameters)
@@ -119,21 +114,12 @@ more_params: ',' type TK_IDENTIFIER more_params {$$ = 0;}
 block: '{' cmd_list '}' {astCreate(AST_CMDBLOCK, 0, $2, 0, 0, 0);}
     ;
 
-// a global variable is a type, followed by an IDENTIFIER and one of:
-// 1- followed by a semicolon and an array element
-// 2- followed by a semicolon and a float
-// 3- an initialized array, with and INTEGER size between brackets followed by initialized array initialization
-global_var: ':' arr_element {$$ = 0;}
-    | ':' float {$$ = 0;}
-    | '[' LIT_INTEGER ']' array_initialization {$$ = 0;}
-    ;
-
 // a float is an INTEGER, followed by a slash and another INTEGER
-float: LIT_INTEGER '/' LIT_INTEGER
+float: LIT_INTEGER '/' LIT_INTEGER {$$ = 0;}
     ;
 
 // an expression cand be one of the following
-expr: KW_READ         {$$ = 0;}  // read command
+expr: KW_READ                 {$$ = astCreate(AST_READ, 0, 0,0,0,0);}  // read command
     | expr '+' expr           {$$ = astCreate(AST_ADD, 0, $1,$3,0,0);} // sum
     | expr '-' expr           {$$ = astCreate(AST_SUB, 0, $1,$3,0,0);} // subtraction
     | expr '*' expr           {$$ = astCreate(AST_MULT, 0, $1,$3,0,0);} // multiplication
@@ -149,17 +135,16 @@ expr: KW_READ         {$$ = 0;}  // read command
     | LIT_CHAR       {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // char
     | LIT_STRING     {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // string
     | TK_IDENTIFIER  {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // identifier
-    | function_call  {$$ = 0;}         // a function call
+    | function_call  {$$ = $1;}         // a function call
     | '[' expr ']'   {$$ = $2;}         // and index for an array
     ;
 
-function_call: TK_IDENTIFIER '(' call_parameters ')'
-    | TK_IDENTIFIER '('')'
+function_call: TK_IDENTIFIER '(' call_parameters ')' {$$ = 0;}
+    | TK_IDENTIFIER '('')' {$$ = 0;}
 
 call_parameters: TK_IDENTIFIER more_call_params
     | LIT_CHAR more_call_params
     | LIT_INTEGER more_call_params
-    |
     ;
 
 more_call_params: ',' call_parameters
@@ -197,7 +182,7 @@ cmd: TK_IDENTIFIER '=' expr  {$$ = astCreate(AST_ATTR, $1, $3,0,0,0);}
     | {$$ = 0;}
     ;
 
-array_initialization: ':' arr_elements {$$ = 0;}
+array_initialization: arr_elements {$$ = 0;}
     | {$$ = 0;}
     ;
 
@@ -208,8 +193,8 @@ more_elements: arr_elements {$$ = 0;}
     | {$$ = 0;}
     ;
 
-arr_element: LIT_INTEGER {$$ = 0;}
-    | LIT_CHAR {$$ = 0;}
+arr_element: LIT_INTEGER {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0); }
+    | LIT_CHAR {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0); }
     ;
 
 %%

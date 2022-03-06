@@ -35,6 +35,15 @@
 #define AST_TYPE_INT 24
 #define AST_TYPE_FLOAT 25
 #define AST_DEC 26
+#define AST_FUNC_DEC 27
+#define AST_GLOBAL_VAR_DEC 28
+#define AST_VAR_DEC 29
+#define AST_FLOAT_DEC 30
+#define AST_INITIALIZED_ARRAY 31
+#define AST_READ 32
+#define AST_GLOBAL_VAR_FLOAT_DEC 33
+#define AST_GLOBAL_VAR_ARR_DEC 34
+#define AST_GLOBAL_VAR_INITIALIZED_ARR_DEC 35
 
 typedef struct astnode
 {
@@ -46,7 +55,7 @@ typedef struct astnode
 AST *astCreate(int type, HASH_NODE *symbol,
                AST *c0, AST *c1, AST *c2, AST *c3);
 
-void *astPrint(AST *node, int level);
+void astPrint(AST *node, int level);
 
 #endif
 

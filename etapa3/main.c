@@ -10,7 +10,7 @@
 
 extern FILE *yyin;
 int yyparse();
-AST *getAST(void);
+AST *getASTRoot();
 
 int main(int argc, char **argv)
 {

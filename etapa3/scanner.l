@@ -43,8 +43,8 @@ int getLineNumber(void) {
                         yylval.symbol = hashInsert(yytext, LIT_INTEGER); 
                         return LIT_INTEGER;
                       }
-\'.\'                 {hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
-\"(\\.|[^\"])*\"      {hashInsert(yytext, LIT_STRING); return LIT_STRING;}
+\'.\'                 {yylval.symbol = hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+\"(\\.|[^\"])*\"      {yylval.symbol = hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 \\\\.*                {printf("COMMENT\n");}
 \\\*                  {BEGIN(MULTILINE_COMMENT);printf("MULTILINE_COMMENT\n");}
 [a-z_\-]+             {

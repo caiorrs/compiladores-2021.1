@@ -893,13 +893,13 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 46 "scanner.l"
-{hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
+{yylval.symbol = hashInsert(yytext, LIT_CHAR); return LIT_CHAR;}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
 #line 47 "scanner.l"
-{hashInsert(yytext, LIT_STRING); return LIT_STRING;}
+{yylval.symbol = hashInsert(yytext, LIT_STRING); return LIT_STRING;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP

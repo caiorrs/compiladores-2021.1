@@ -19,17 +19,18 @@ AST *astCreate(int type, HASH_NODE *symbol,
 
   return newnode;
 }
-void *astPrint(AST *node, int level)
+void astPrint(AST *node, int level)
 {
   int i = 0;
 
   if (node == 0)
     return;
 
-  for (i = 0; i < level; ++i)
+  for (i = 0; i <= level; ++i)
     fprintf(stderr, "  ");
 
   fprintf(stderr, "ast(");
+  fprintf(stderr, "==%d==\n", node->type);
   switch (node->type)
   {
   case AST_SYMBOL:
@@ -98,9 +99,45 @@ void *astPrint(AST *node, int level)
   case AST_DECLIST:
     fprintf(stderr, "AST_DECLIST");
     break;
+  case AST_TYPE_CHAR:
+    fprintf(stderr, "AST_TYPE_CHAR");
+    break;
+  case AST_TYPE_INT:
+    fprintf(stderr, "AST_TYPE_INT");
+    break;
+  case AST_TYPE_FLOAT:
+    fprintf(stderr, "AST_TYPE_FLOAT");
+    break;
+  case AST_DEC:
+    fprintf(stderr, "AST_DEC");
+    break;
+  case AST_FUNC_DEC:
+    fprintf(stderr, "AST_FUNC_DEC");
+    break;
+  case AST_GLOBAL_VAR_DEC:
+    fprintf(stderr, "AST_GLOBAL_VAR_DEC");
+    break;
+  case AST_VAR_DEC:
+    fprintf(stderr, "AST_VAR_DEC");
+    break;
+  case AST_FLOAT_DEC:
+    fprintf(stderr, "AST_FLOAT_DEC");
+    break;
+  case AST_INITIALIZED_ARRAY:
+    fprintf(stderr, "AST_INITIALIZED_ARRAY");
+    break;
+  case AST_GLOBAL_VAR_FLOAT_DEC:
+    fprintf(stderr, "AST_GLOBAL_VAR_FLOAT_DEC");
+    break;
+  case AST_GLOBAL_VAR_ARR_DEC:
+    fprintf(stderr, "AST_GLOBAL_VAR_ARR_DEC");
+    break;
+  case AST_GLOBAL_VAR_INITIALIZED_ARR_DEC:
+    fprintf(stderr, "AST_GLOBAL_VAR_INITIALIZED_ARR_DEC");
+    break;
 
   default:
-    fprintf(stderr, "AST_UNKNOWN");
+    fprintf(stderr, "AST_UNKNOWN - %d", node->type);
     break;
   }
   if (node->symbol != 0)
