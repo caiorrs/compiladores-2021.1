@@ -798,7 +798,7 @@ YY_RULE_SETUP
 case 2:
 YY_RULE_SETUP
 #line 24 "scanner.l"
-{printf("%s\n", yytext); return KW_INT;}
+{return KW_INT;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
@@ -848,7 +848,7 @@ YY_RULE_SETUP
 case 12:
 YY_RULE_SETUP
 #line 34 "scanner.l"
-{printf("%c\n", yytext[0]); return yytext[0];}
+{return yytext[0];}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP

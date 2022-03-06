@@ -41,6 +41,63 @@ void *astPrint(AST *node, int level)
   case AST_SUB:
     fprintf(stderr, "AST_SUB");
     break;
+  case AST_ATTR:
+    fprintf(stderr, "AST_ATTR");
+    break;
+  case AST_ATTR_ARR:
+    fprintf(stderr, "AST_ATTR_ARR");
+    break;
+  case AST_CMDLIST:
+    fprintf(stderr, "AST_CMDLIST");
+    break;
+  case AST_CMDBLOCK:
+    fprintf(stderr, "AST_CMDBLOCK");
+    break;
+  case AST_MULT:
+    fprintf(stderr, "AST_MULT");
+    break;
+  case AST_DIV:
+    fprintf(stderr, "AST_DIV");
+    break;
+  case AST_GREAT:
+    fprintf(stderr, "AST_GREAT");
+    break;
+  case AST_LESS:
+    fprintf(stderr, "AST_LESS");
+    break;
+  case AST_EQ:
+    fprintf(stderr, "AST_EQ");
+    break;
+  case AST_GE:
+    fprintf(stderr, "AST_GE");
+    break;
+  case AST_LE:
+    fprintf(stderr, "AST_LE");
+    break;
+  case AST_DIF:
+    fprintf(stderr, "AST_DIF");
+    break;
+  case AST_PRINT:
+    fprintf(stderr, "AST_PRINT");
+    break;
+  case AST_RETURN:
+    fprintf(stderr, "AST_RETURN");
+    break;
+  case AST_IF:
+    fprintf(stderr, "AST_IF");
+    break;
+  case AST_IF_ELSE:
+    fprintf(stderr, "AST_IF_ELSE");
+    break;
+  case AST_WHILE:
+    fprintf(stderr, "AST_WHILE");
+    break;
+  case AST_GOTO:
+    fprintf(stderr, "AST_GOTO");
+    break;
+  case AST_DECLIST:
+    fprintf(stderr, "AST_DECLIST");
+    break;
 
   default:
     fprintf(stderr, "AST_UNKNOWN");

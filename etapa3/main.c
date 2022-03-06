@@ -6,9 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "hash.h"
+#include "ast.h"
 
 extern FILE *yyin;
 int yyparse();
+AST *getAST(void);
 
 int main(int argc, char **argv)
 {
@@ -31,6 +33,8 @@ int main(int argc, char **argv)
   yyparse();
 
   hashPrint();
+
+  astPrint(getASTRoot(), 0);
 
   fprintf(stderr, "Compilation successful!\n");
 

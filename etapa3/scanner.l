@@ -21,7 +21,7 @@ int getLineNumber(void) {
 %%  
 
 "char"                  {return KW_CHAR;}
-"int"                   {printf("%s\n", yytext); return KW_INT;}
+"int"                   {return KW_INT;}
 "float"                 {return KW_FLOAT;}
 "if"                    {return KW_IF;}
 "then"                  {return KW_THEN;}
@@ -31,7 +31,7 @@ int getLineNumber(void) {
 "read"                  {return KW_READ;}
 "print"                 {return KW_PRINT;}
 "return"                {return KW_RETURN;}
-[,;:/(/){}\[\]+-/*<>=]           {printf("%c\n", yytext[0]); return yytext[0];}
+[,;:/(/){}\[\]+-/*<>=]           {return yytext[0];}
 "<="                  {return OPERATOR_LE;}
 ">="                  {return OPERATOR_GE;}
 "=="                  {return OPERATOR_EQ;}
