@@ -101,12 +101,12 @@ type: KW_CHAR   {$$ = astCreate(AST_TYPE_CHAR, 0, 0, 0, 0, 0);}
     ;
 
 // parameters are defined as a TYPE, followed by an IDENTIFIER and then followed by more parameters
-params: type TK_IDENTIFIER more_params {$$ = 0;}
+params: type TK_IDENTIFIER more_params {$$ = astCreate(AST_FUNC_PARAMS, $2, $1, $3, 0, 0);}
     | {$$ = 0;}
     ;
 
 // more parameters is defined as a comma (to separate params), followed by an IDENTIFIER and then more parameters or empty (no more parameters)
-more_params: ',' type TK_IDENTIFIER more_params {$$ = 0;}
+more_params: ',' type TK_IDENTIFIER more_params {$$ = astCreate(AST_FUNC_MORE_PARAMS, $3, $2, $4, 0, 0);}
     | {$$ = 0;}
     ;
 
@@ -115,7 +115,7 @@ block: '{' cmd_list '}' {$$ = astCreate(AST_CMDBLOCK, 0, $2, 0, 0, 0);}
     ;
 
 // a float is an INTEGER, followed by a slash and another INTEGER
-float: LIT_INTEGER '/' LIT_INTEGER {$$ = 0;}
+float: LIT_INTEGER '/' LIT_INTEGER {$$ = astCreate(AST_FLOAT_VALUE, 0, astCreate(AST_SYMBOL, $1, 0,0,0,0), astCreate(AST_SYMBOL, $3, 0,0,0,0), 0, 0);}
     ;
 
 // an expression cand be one of the following

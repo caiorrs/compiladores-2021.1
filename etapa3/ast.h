@@ -44,6 +44,9 @@
 #define AST_GLOBAL_VAR_FLOAT_DEC 33
 #define AST_GLOBAL_VAR_ARR_DEC 34
 #define AST_GLOBAL_VAR_INITIALIZED_ARR_DEC 35
+#define AST_FLOAT_VALUE 36
+#define AST_FUNC_PARAMS 37
+#define AST_FUNC_MORE_PARAMS 38
 
 typedef struct astnode
 {
@@ -56,6 +59,8 @@ AST *astCreate(int type, HASH_NODE *symbol,
                AST *c0, AST *c1, AST *c2, AST *c3);
 
 void astPrint(AST *node, int level);
+
+void decompileAndSave(AST *node, FILE *file);
 
 #endif
 

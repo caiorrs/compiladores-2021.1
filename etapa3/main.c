@@ -11,6 +11,7 @@
 extern FILE *yyin;
 int yyparse();
 AST *getASTRoot();
+FILE *output;
 
 int main(int argc, char **argv)
 {
@@ -19,13 +20,19 @@ int main(int argc, char **argv)
 
   int token;
 
-  if (argc < 2)
+  if (argc < 3)
   {
-    fprintf(stderr, "Call ./a.out file_name\n");
+    fprintf(stderr, "Call ./etapa3 in_file_name out_file_name\n");
     exit(1);
   }
 
   yyin = fopen(argv[1], "r");
+
+  if (!(output = fopen(argv[2], "w+")))
+  {
+    fprintf(stderr, "Cannot open file %s\n", argv[2]);
+    return 2;
+  }
 
   hashInit();
 
@@ -37,6 +44,8 @@ int main(int argc, char **argv)
   astPrint(getASTRoot(), 0);
 
   fprintf(stderr, "Compilation successful!\n");
+
+  decompileAndSave(getASTRoot(), output);
 
   exit(0);
 }

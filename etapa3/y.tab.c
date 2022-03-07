@@ -1527,7 +1527,7 @@ yyreduce:
 
   case 13:
 #line 104 "parser.y"
-                                       {(yyval.ast) = 0;}
+                                       {(yyval.ast) = astCreate(AST_FUNC_PARAMS, (yyvsp[-1].symbol), (yyvsp[-2].ast), (yyvsp[0].ast), 0, 0);}
 #line 1532 "y.tab.c"
     break;
 
@@ -1539,7 +1539,7 @@ yyreduce:
 
   case 15:
 #line 109 "parser.y"
-                                                {(yyval.ast) = 0;}
+                                                {(yyval.ast) = astCreate(AST_FUNC_MORE_PARAMS, (yyvsp[-1].symbol), (yyvsp[-2].ast), (yyvsp[0].ast), 0, 0);}
 #line 1544 "y.tab.c"
     break;
 
@@ -1557,7 +1557,7 @@ yyreduce:
 
   case 18:
 #line 118 "parser.y"
-                                   {(yyval.ast) = 0;}
+                                   {(yyval.ast) = astCreate(AST_FLOAT_VALUE, 0, astCreate(AST_SYMBOL, (yyvsp[-2].symbol), 0,0,0,0), astCreate(AST_SYMBOL, (yyvsp[0].symbol), 0,0,0,0), 0, 0);}
 #line 1562 "y.tab.c"
     break;
 
