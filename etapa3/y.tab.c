@@ -1479,49 +1479,49 @@ yyreduce:
 
   case 5:
 #line 90 "parser.y"
-                                                 {(yyval.ast) = 0;}
+                                                 {(yyval.ast) = astCreate(AST_FUNC_DEC, (yyvsp[-4].symbol), (yyvsp[-5].ast), (yyvsp[-2].ast), (yyvsp[0].ast), 0);}
 #line 1484 "y.tab.c"
     break;
 
   case 6:
 #line 91 "parser.y"
-                                                   {astCreate(AST_GLOBAL_VAR_DEC, (yyvsp[-3].symbol), (yyvsp[-4].ast), (yyvsp[-1].ast), 0, 0);}
+                                                   {(yyval.ast) = astCreate(AST_GLOBAL_VAR_DEC, (yyvsp[-3].symbol), (yyvsp[-4].ast), (yyvsp[-1].ast), 0, 0);}
 #line 1490 "y.tab.c"
     break;
 
   case 7:
 #line 92 "parser.y"
-                                                   {(yyval.ast) = 0;}
+                                                   {(yyval.ast) = astCreate(AST_GLOBAL_VAR_FLOAT_DEC, (yyvsp[-3].symbol), (yyvsp[-4].ast), (yyvsp[-1].ast), 0, 0);}
 #line 1496 "y.tab.c"
     break;
 
   case 8:
 #line 93 "parser.y"
-                                                   {(yyval.ast) = 0;}
+                                                   {(yyval.ast) = astCreate(AST_GLOBAL_VAR_ARR_DEC, (yyvsp[-4].symbol), (yyvsp[-5].ast), astCreate(AST_SYMBOL, (yyvsp[-2].symbol), 0,0,0,0), 0, 0);}
 #line 1502 "y.tab.c"
     break;
 
   case 9:
 #line 94 "parser.y"
-                                                                          {(yyval.ast) = 0;}
+                                                                          {(yyval.ast) = astCreate(AST_GLOBAL_VAR_INITIALIZED_ARR_DEC, (yyvsp[-6].symbol), (yyvsp[-7].ast), astCreate(AST_SYMBOL, (yyvsp[-4].symbol), 0,0,0,0), (yyvsp[-1].ast), 0);}
 #line 1508 "y.tab.c"
     break;
 
   case 10:
 #line 98 "parser.y"
-                {astCreate(AST_TYPE_CHAR, 0, 0, 0, 0, 0);}
+                {(yyval.ast) = astCreate(AST_TYPE_CHAR, 0, 0, 0, 0, 0);}
 #line 1514 "y.tab.c"
     break;
 
   case 11:
 #line 99 "parser.y"
-                {astCreate(AST_TYPE_INT, 0, 0, 0, 0, 0);}
+                {(yyval.ast) = astCreate(AST_TYPE_INT, 0, 0, 0, 0, 0);}
 #line 1520 "y.tab.c"
     break;
 
   case 12:
 #line 100 "parser.y"
-                {astCreate(AST_TYPE_FLOAT, 0, 0, 0, 0, 0);}
+                {(yyval.ast) = astCreate(AST_TYPE_FLOAT, 0, 0, 0, 0, 0);}
 #line 1526 "y.tab.c"
     break;
 
@@ -1551,7 +1551,7 @@ yyreduce:
 
   case 17:
 #line 114 "parser.y"
-                        {astCreate(AST_CMDBLOCK, 0, (yyvsp[-1].ast), 0, 0, 0);}
+                        {(yyval.ast) = astCreate(AST_CMDBLOCK, 0, (yyvsp[-1].ast), 0, 0, 0);}
 #line 1556 "y.tab.c"
     break;
 
@@ -1779,7 +1779,7 @@ yyreduce:
 
   case 61:
 #line 181 "parser.y"
-                            {(yyval.ast) = 0;}
+                            {(yyval.ast) = astCreate(AST_GOTO, 0, 0, 0, 0, 0);}
 #line 1784 "y.tab.c"
     break;
 

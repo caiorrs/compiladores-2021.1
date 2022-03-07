@@ -29,8 +29,8 @@ void astPrint(AST *node, int level)
   for (i = 0; i <= level; ++i)
     fprintf(stderr, "  ");
 
-  fprintf(stderr, "ast(");
-  fprintf(stderr, "==%d==\n", node->type);
+  fprintf(stderr, "ast( ");
+  // fprintf(stderr, "==%d==\n", node->type);
   switch (node->type)
   {
   case AST_SYMBOL:
