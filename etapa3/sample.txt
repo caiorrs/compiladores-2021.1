@@ -13,6 +13,10 @@ This is a comment
 of multiple lines
 *\
 
+int test()
+  while i < 10
+    if(i / 2 == 1) then i = i - 1 else i = i + 1
+
 int main ()
   {
   a = 0;

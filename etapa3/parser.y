@@ -87,7 +87,7 @@ decl: dec decl {$$ = astCreate(AST_DECLIST, 0, $1,$2,0,0);}
     ;
 
 // a declaration is a TYPE followed by an IDENTIFIER and then a declaration_type
-dec: type TK_IDENTIFIER '(' params ')' block       {$$ = 0;} //{astCreate(AST_FUNC_DEC, $2, $1, $4, $6, 0);}
+dec: type TK_IDENTIFIER '(' params ')' cmd       {$$ = 0;} //{astCreate(AST_FUNC_DEC, $2, $1, $4, $6, 0);}
     | type TK_IDENTIFIER ':' arr_element ';'       {astCreate(AST_GLOBAL_VAR_DEC, $2, $1, $4, 0, 0);}
     | type TK_IDENTIFIER ':' float ';'             {$$ = 0;} //{astCreate(AST_GLOBAL_VAR_FLOAT_DEC, $2, $1, $4, 0, 0);}
     | type TK_IDENTIFIER '[' LIT_INTEGER ']' ';'   {$$ = 0;} //{astCreate(AST_GLOBAL_VAR_ARR_DEC, $2, $1, astCreate(AST_SYMBOL, $4, 0,0,0,0), 0, 0);}
@@ -136,15 +136,17 @@ expr: KW_READ                 {$$ = astCreate(AST_READ, 0, 0,0,0,0);}  // read c
     | LIT_STRING     {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // string
     | TK_IDENTIFIER  {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // identifier
     | function_call  {$$ = $1;}         // a function call
-    | '[' expr ']'   {$$ = $2;}         // and index for an array
+    | TK_IDENTIFIER '[' expr ']'   {$$ = astCreate(AST_SYMBOL, $1, $3,0,0,0);} // and index for an array
     ;
 
 function_call: TK_IDENTIFIER '(' call_parameters ')' {$$ = 0;}
-    | TK_IDENTIFIER '('')' {$$ = 0;}
+    //| TK_IDENTIFIER '('')' {$$ = 0;}
+    ;
 
 call_parameters: TK_IDENTIFIER more_call_params
     | LIT_CHAR more_call_params
     | LIT_INTEGER more_call_params
+    |
     ;
 
 more_call_params: ',' call_parameters
@@ -175,7 +177,7 @@ cmd: TK_IDENTIFIER '=' expr  {$$ = astCreate(AST_ATTR, $1, $3,0,0,0);}
     | KW_RETURN expr {$$ = astCreate(AST_RETURN, 0, $2, 0, 0, 0);}
     | KW_IF expr KW_THEN cmd {$$ = astCreate(AST_IF, 0, $2, $4, 0, 0);}
     | KW_IF expr KW_THEN cmd KW_ELSE cmd {$$ = astCreate(AST_IF_ELSE, 0, $2, $4, $6, 0);}
-    | KW_WHILE expr block {$$ = astCreate(AST_WHILE, 0, $2, $3, 0, 0);}
+    | KW_WHILE expr cmd {$$ = astCreate(AST_WHILE, 0, $2, $3, 0, 0);}
     | KW_GOTO TK_IDENTIFIER {$$ = 0;}
     | block {$$ = $1;}
     | expr {$$ = $1;}
