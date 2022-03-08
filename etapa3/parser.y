@@ -136,7 +136,7 @@ expr: KW_READ                 {$$ = astCreate(AST_READ, 0, 0,0,0,0);}  // read c
     | LIT_STRING     {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // string
     | TK_IDENTIFIER  {$$ = astCreate(AST_SYMBOL, $1, 0,0,0,0);}     // identifier
     | function_call  {$$ = $1;}         // a function call
-    | TK_IDENTIFIER '[' expr ']'   {$$ = astCreate(AST_SYMBOL, $1, $3,0,0,0);} // and index for an array
+    //| TK_IDENTIFIER '[' expr ']'  {$$ = astCreate(AST_SYMBOL, $1, $3,0,0,0);} // and index for an array
     ;
 
 function_call: TK_IDENTIFIER '(' call_parameters ')' {$$ = 0;}
@@ -167,7 +167,7 @@ more_print_values: ',' print_values {$$ = 0;}
     ;
 
 cmd_list: cmd ';' cmd_list {$$ = astCreate(AST_CMDLIST, 0, $1,$3,0,0);}
-    | TK_IDENTIFIER ':' cmd_list {$$ = 0;}
+    | TK_IDENTIFIER ':' cmd_list {$$ = astCreate(AST_CMDLIST, $1, $3,0,0,0);}
     | {$$ = 0;}
     ;
 
@@ -180,18 +180,18 @@ cmd: TK_IDENTIFIER '=' expr  {$$ = astCreate(AST_ATTR, $1, $3,0,0,0);}
     | KW_WHILE expr cmd {$$ = astCreate(AST_WHILE, 0, $2, $3, 0, 0);}
     | KW_GOTO TK_IDENTIFIER {$$ = astCreate(AST_GOTO, 0, 0, 0, 0, 0);}
     | block {$$ = $1;}
-    | expr {$$ = $1;}
+    // | expr {$$ = $1;}
     | {$$ = 0;}
     ;
 
-array_initialization: arr_elements {$$ = 0;}
+array_initialization: arr_elements {$$ = $1;}
     | {$$ = 0;}
     ;
 
-arr_elements: arr_element more_elements {$$ = 0;}
+arr_elements: arr_element more_elements {$$ = astCreate(AST_ARR_ELEMENTS, 0, $1, $2, 0, 0);}
     ;
 
-more_elements: arr_elements {$$ = 0;}
+more_elements: arr_elements {$$ = $1;}
     | {$$ = 0;}
     ;
 

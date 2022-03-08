@@ -147,6 +147,9 @@ void astPrint(AST *node, int level)
   case AST_FLOAT_VALUE:
     fprintf(stderr, "AST_FLOAT_VALUE");
     break;
+  case AST_ARR_ELEMENTS:
+    fprintf(stderr, "AST_ARR_ELEMENTS");
+    break;
 
   default:
     fprintf(stderr, "AST_UNKNOWN - %d", node->type);
@@ -171,10 +174,12 @@ void decompileAndSave(AST *node, FILE *f)
   if (node == 0)
     return;
 
+  // fprintf(stderr, "VALUE - %d\n", node->type);
+
   switch (node->type)
   {
   case AST_SYMBOL:
-    fprintf(f, " %s", node->symbol->text);
+    fprintf(f, "%s", node->symbol->text);
     break;
   case AST_ADD:
     fprintf(f, "AST_ADD");
@@ -341,321 +346,12 @@ void decompileAndSave(AST *node, FILE *f)
     decompileAndSave(node->child[2], f);
     fprintf(f, ";\n");
     break;
-    // case AST_DCL_LIST:
-    // case AST_LITERAL_LIST:
-    // case AST_CMD_LIST:
-    // case AST_PRINT_PARAMETER_LIST:
-    // case AST_FUNC_CALL_PARAMETER_LIST:
-    // {
-    //   for (i = 0; i < MAX_SONS; i++)
-    //     astToFile(node->sons[i], f);
-    //   break;
-    // }
-    // case AST_DCL_VAR:
-    // {
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " = ");
-
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " :");
-
-    //   astToFile(node->sons[1], f);
-    //   fprintf(f, ";\n");
-    //   break;
-    // }
-    // case AST_DCL_VEC_VALUES:
-    // {
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " = ");
-
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " [");
-    //   astToFile(node->sons[1], f);
-    //   fprintf(f, "]");
-    //   fprintf(f, " :");
-
-    //   astToFile(node->sons[2], f);
-    //   fprintf(f, ";\n");
-    //   break;
-    // }
-    // case AST_DCL_VEC:
-    // {
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " = ");
-
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " [");
-    //   astToFile(node->sons[1], f);
-    //   fprintf(f, "]");
-    //   fprintf(f, ";\n");
-    //   break;
-    // }
-    // case AST_DCL_FUN:
-    // {
-    //   fprintf(f, "\n");
-    //   fprintf(f, "%s", node->symbol->text);
-
-    //   fprintf(f, " (");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, ")");
-
-    //   fprintf(f, " = ");
-
-    //   astToFile(node->sons[1], f);
-    //   astToFile(node->sons[2], f);
-    //   fprintf(f, ";\n");
-    //   break;
-    // }
-    // case AST_CMD_BLOCK:
-    // {
-    //   fprintf(f, " {");
-    //   level++;
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, "\n");
-    //   level--;
-    //   ident(f);
-    //   fprintf(f, "}");
-    //   break;
-    // }
-    // case AST_ATTR:
-    // {
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " =");
-    //   astToFile(node->sons[0], f);
-    //   break;
-    // }
-    // case AST_ATTR_VEC:
-    // {
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " [");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, "]");
-    //   fprintf(f, " =");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_PRINT:
-    // {
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "print ");
-    //   astToFile(node->sons[0], f);
-    //   break;
-    // }
-    // case AST_READ:
-    // {
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "read ");
-    //   fprintf(f, "%s", node->symbol->text);
-    //   break;
-    // }
-    // case AST_RETURN:
-    // {
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "return");
-    //   astToFile(node->sons[0], f);
-    //   break;
-    // }
-    // case AST_IF:
-    // {
-    //   fprintf(f, "\n");
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "if ");
-    //   fprintf(f, "(");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " )");
-    //   fprintf(f, " then");
-    //   level++;
-    //   astToFile(node->sons[1], f);
-    //   level--;
-    //   break;
-    // }
-    // case AST_IF_ELSE:
-    // {
-    //   fprintf(f, "\n");
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "if ");
-    //   fprintf(f, "(");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " )");
-    //   fprintf(f, " then");
-    //   astToFile(node->sons[1], f);
-    //   fprintf(f, " else");
-    //   astToFile(node->sons[2], f);
-    //   break;
-    // }
-    // case AST_WHILE:
-    // {
-    //   fprintf(f, "\n");
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "while ");
-    //   fprintf(f, "(");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " )");
-    //   level++;
-    //   astToFile(node->sons[1], f);
-    //   level--;
-    //   break;
-    // }
-    // case AST_LOOP:
-    // {
-    //   fprintf(f, "\n");
-    //   fprintf(f, "\n");
-    //   ident(f);
-    //   fprintf(f, "loop ");
-    //   fprintf(f, "(");
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, " :");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, ",");
-    //   astToFile(node->sons[1], f);
-    //   fprintf(f, ",");
-    //   astToFile(node->sons[2], f);
-    //   fprintf(f, ")");
-    //   level++;
-    //   astToFile(node->sons[3], f);
-    //   level--;
-    //   break;
-    // }
-    // case AST_VECTOR:
-    // {
-    //   fprintf(f, "%s", node->symbol->text);
-    //   fprintf(f, "[");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, "]");
-    //   break;
-    // }
-    // case AST_FUNCTION:
-    // {
-    //   fprintf(f, " %s", node->symbol->text);
-    //   fprintf(f, "(");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, ")");
-    //   break;
-    // }
-    // case AST_ADD:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " +");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_SUB:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " -");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_DIV:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " /");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_MUL:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " *");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_POW:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " ^");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_OR:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " |");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_GREATER:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " >");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_LESS:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " <");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_LESS_EQUAL:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " <=");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_GREATER_EQUAL:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " >=");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_EQUAL:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " ==");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_DIFFERENT:
-    // {
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " !=");
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_PARENTHESIS_EXPR:
-    // {
-    //   fprintf(f, " (");
-    //   astToFile(node->sons[0], f);
-    //   fprintf(f, " )");
-    //   break;
-    // }
-    // case AST_PRINT_PARAMETER_LIST_REST:
-    // case AST_FUNC_CALL_PARAMETER_LIST_REST:
-    // {
-    //   fprintf(f, ",");
-    //   astToFile(node->sons[0], f);
-    //   astToFile(node->sons[1], f);
-    //   break;
-    // }
-    // case AST_PARAMETER_LIST:
-    // {
-    //   fprintf(f, " %s", node->symbol->text);
-    //   fprintf(f, "=");
-    //   astToFile(node->sons[0], f);
-    //   astToFile(node->sons[1], f);
-    // }
-    // case AST_PARAMETER_LIST_REST:
-    // {
-    //   fprintf(f, ",");
-    //   fprintf(f, " %s", node->symbol->text);
-    //   fprintf(f, "=");
-    //   astToFile(node->sons[0], f);
-    //   astToFile(node->sons[1], f);
-    // }
+  case AST_ARR_ELEMENTS:
+    // fprintf(f, "AST_ARR_ELEMENTS\n");
+    decompileAndSave(node->child[0], f);
+    fprintf(f, " ");
+    decompileAndSave(node->child[1], f);
+    break;
   }
 }
 

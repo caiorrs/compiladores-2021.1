@@ -47,6 +47,8 @@
 #define AST_FLOAT_VALUE 36
 #define AST_FUNC_PARAMS 37
 #define AST_FUNC_MORE_PARAMS 38
+#define AST_FUNC_CALL 39
+#define AST_ARR_ELEMENTS 40
 
 typedef struct astnode
 {
